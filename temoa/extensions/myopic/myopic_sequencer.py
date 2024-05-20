@@ -87,7 +87,7 @@ class MyopicSequencer:
     ]
 
     def __init__(self, config: TemoaConfig | None):
-        self.capacity_epsilon = 1e-5
+        self.capacity_epsilon = 10 # Changed this from 1e-5 because we're using MW capacity
         self.debugging = False
         self.optimization_periods: list[int] | None = None
         self.instance_queue: deque[MyopicIndex] = deque()  # a LIFO queue
