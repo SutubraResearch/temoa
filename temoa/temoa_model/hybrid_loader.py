@@ -55,6 +55,8 @@ logger = getLogger(__name__)
 tables_with_regional_groups = {
     'MaxActivity': 'region',
     'MinActivity': 'region',
+    'MaxSeasonalActivity': 'region',
+    'MinSeasonalActivity': 'region',
     'MinAnnualCapacityFactor': 'region',
     'MaxAnnualCapacityFactor': 'region',
     'EmissionLimit': 'region',
@@ -1158,6 +1160,62 @@ class HybridLoader:
                     'SELECT region, period, tech, min_act FROM main.MinActivity '
                 ).fetchall()
             load_element(M.MinActivity, raw, self.viable_rt, (1, 2))
+
+        # MaxSeasonalActivity
+        if self.table_exists('MaxSeasonalActivity'):
+            if mi:
+                raw = cur.execute(
+                    'SELECT region, period, season, tech, max_act FROM main.MaxSeasonalActivity '
+                    'WHERE period >= ? AND period <= ?',
+                    (mi.base_year, mi.last_demand_year),
+                ).fetchall()
+            else:
+                raw = cur.execute(
+                    'SELECT region, period, season, tech, max_act FROM main.MaxSeasonalActivity '
+                ).fetchall()
+            load_element(M.MaxSeasonalActivity, raw, self.viable_rt, (0, 3))
+
+        # MinSeasonalActivity
+        if self.table_exists('MinSeasonalActivity'):
+            if mi:
+                raw = cur.execute(
+                    'SELECT region, period, season, tech, min_act FROM main.MinSeasonalActivity '
+                    'WHERE period >= ? AND period <= ?',
+                    (mi.base_year, mi.last_demand_year),
+                ).fetchall()
+            else:
+                raw = cur.execute(
+                    'SELECT region, period, season, tech, min_act FROM main.MinSeasonalActivity '
+                ).fetchall()
+            load_element(M.MinSeasonalActivity, raw, self.viable_rt, (0, 3))
+
+        # MinDailyCapacityFactor
+        if self.table_exists('MinDailyCapacityFactor'):
+            raw = cur.execute(
+                'SELECT region, tech, season, factor FROM main.MinDailyCapacityFactor'
+            ).fetchall()
+            load_element(M.MinDailyCapacityFactor, raw, self.viable_rt, (0, 1))
+
+        # MaxDailyCapacityFactor
+        if self.table_exists('MaxDailyCapacityFactor'):
+            raw = cur.execute(
+                'SELECT region, tech, season, factor FROM main.MaxDailyCapacityFactor'
+            ).fetchall()
+            load_element(M.MaxDailyCapacityFactor, raw, self.viable_rt, (0, 1))
+
+        # MinMonthlyCapacityFactor
+        if self.table_exists('MinMonthlyCapacityFactor'):
+            raw = cur.execute(
+                'SELECT region, tech, month, factor FROM main.MinMonthlyCapacityFactor'
+            ).fetchall()
+            load_element(M.MinMonthlyCapacityFactor, raw, self.viable_rt, (0, 1))
+
+        # MaxDailyCapacityFactor
+        if self.table_exists('MaxMonthlyCapacityFactor'):
+            raw = cur.execute(
+                'SELECT region, tech, month, factor FROM main.MaxMonthlyCapacityFactor'
+            ).fetchall()
+            load_element(M.MaxMonthlyCapacityFactor, raw, self.viable_rt, (0, 1))
 
         # MinAnnualCapacityFactor
         if self.table_exists('MinAnnualCapacityFactor'):

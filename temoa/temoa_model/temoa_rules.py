@@ -2196,6 +2196,153 @@ def MinActivity_Constraint(M: 'TemoaModel', r, p, t):
         return Constraint.Skip
     return expr
 
+def MaxSeasonalActivity_Constraint(M: 'TemoaModel', r, p, s, t):
+    r"""
+
+    The MaxSeasonalActivity sets an upper bound on the activity from a specific
+    technology in a specific 'time_season'.
+    Note that the indices for these constraints are region, period, season and tech, not tech
+    and vintage. The first version of the constraint pertains to technologies with
+    variable output at the time slice level, and the second version pertains to
+    technologies with constant annual output belonging to the :code:`tech_annual`
+    set.
+
+    .. math::
+       :label: MaxSeasonalActivity
+
+       \sum_{S,D,I,V,O} \textbf{FO}_{r, p, s, d, i, t, v, o}  \le MSA_{r, p, s, t}
+
+       \forall \{r, p s, t\} \in \Theta_{\text{MaxSeasonalActivity}}
+
+    """
+    # r can be an individual region (r='US'), or a combination of regions separated by
+    # a + (r='Mexico+US+Canada'), or 'global'.
+    # if r == 'global', the constraint is system-wide
+    if r == 'global':
+        reg = M.regions
+    elif '+' in r:
+        reg = r.split('+')
+    else:
+        reg = (r,)
+
+    activity_rpt = sum(
+        M.V_FlowOut[r, p, s, d, S_i, t, S_v, S_o]
+        for r in reg
+        for S_v in M.processVintages.get((r, p, t), [])
+        for S_i in M.processInputs[r, p, t, S_v]
+        for S_o in M.ProcessOutputsByInput[r, p, t, S_v, S_i]
+        for d in M.time_of_day
+    )
+
+    max_act = value(M.MaxSeasonalActivity[r, p, s, t])
+    expr = activity_rpt <= max_act
+    # in the case that there is nothing to sum, skip
+    if isinstance(expr, bool):  # an empty list was generated
+        return Constraint.Skip
+    return expr
+
+def MaxDailyCapacityFactor_Constraint(M: 'TemoaModel', r, p, s, t):
+
+    # TODO: Include docstring
+    activity_rpst = sum(
+        M.V_FlowOut[r, p, s, d, S_i, t, S_v, S_o]
+        for S_v in M.processVintages.get((r, p, t), [])
+        for S_i in M.processInputs[r, p, t, S_v]
+        for S_o in M.ProcessOutputsByInput[r, p, t, S_v, S_i]
+        for d in M.time_of_day
+    )
+
+    max_cf = value(M.MaxDailyCapacityFactor[r, p, s, t])
+    max_possible_activity_rpst = (
+            M.V_CapacityAvailableByPeriodAndTech[r, p, t] * M.CapacityToActivity[r, t] / 365
+    ) # TODO: generalize this by replacing 365 with SegFrac values
+
+    expr = activity_rpst <= max_cf * max_possible_activity_rpst
+    # in the case that there is nothing to sum, skip
+    if isinstance(expr, bool):  # an empty list was generated
+        return Constraint.Skip
+    return expr
+
+
+def MinDailyCapacityFactor_Constraint(M: 'TemoaModel', r, p, s, t):
+
+    # TODO: Include docstring
+    activity_rpst = sum(
+        M.V_FlowOut[r, p, s, d, S_i, t, S_v, S_o]
+        for S_v in M.processVintages.get((r, p, t), [])
+        for S_i in M.processInputs[r, p, t, S_v]
+        for S_o in M.ProcessOutputsByInput[r, p, t, S_v, S_i]
+        for d in M.time_of_day
+    )
+
+    min_cf = value(M.MinDailyCapacityFactor[r, p, s, t])
+    max_possible_activity_rpst = (
+            M.V_CapacityAvailableByPeriodAndTech[r, p, t] * M.CapacityToActivity[r, t] / 365
+    )  # TODO: generalize this by replacing 365 with SegFrac values
+
+    expr = activity_rpst >= min_cf * max_possible_activity_rpst
+    # in the case that there is nothing to sum, skip
+    if isinstance(expr, bool):  # an empty list was generated
+        return Constraint.Skip
+    return expr
+
+def MaxMonthlyCapacityFactor_Constraint(M: 'TemoaModel', r, p, m, t):
+
+    # TODO: Include docstring
+
+    # Number of days in each month (for non-leap years)
+    days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    # Calculate fraction of the year each month represents
+    fraction_of_year = {i + 1: days / 365.0 for i, days in enumerate(days_in_month)}
+
+    activity_rpmt = sum(
+        M.V_FlowOut[r, p, s, d, S_i, t, S_v, S_o]
+        for S_v in M.processVintages.get((r, p, t), [])
+        for S_i in M.processInputs[r, p, t, S_v]
+        for S_o in M.ProcessOutputsByInput[r, p, t, S_v, S_i]
+        for s in M.season_to_month_map[m]
+        for d in M.time_of_day
+    )
+
+    max_cf = value(M.MaxMonthlyCapacityFactor[r, p, m, t])
+    max_possible_activity_rpmt = (
+            M.V_CapacityAvailableByPeriodAndTech[r, p, t] * M.CapacityToActivity[r, t] * fraction_of_year[m]
+    ) # TODO: Use M.time_month values instead of assuming 1, 2, 3, ..., 12
+
+    expr = activity_rpmt <= max_cf * max_possible_activity_rpmt
+    # in the case that there is nothing to sum, skip
+    if isinstance(expr, bool):  # an empty list was generated
+        return Constraint.Skip
+    return expr
+
+def MinMonthlyCapacityFactor_Constraint(M: 'TemoaModel', r, p, m, t):
+
+    # TODO: Include docstring
+
+    # Number of days in each month (for non-leap years)
+    days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    # Calculate fraction of the year each month represents
+    fraction_of_year = {i + 1: days / 365.0 for i, days in enumerate(days_in_month)}
+
+    activity_rpmt = sum(
+        M.V_FlowOut[r, p, s, d, S_i, t, S_v, S_o]
+        for S_v in M.processVintages.get((r, p, t), [])
+        for S_i in M.processInputs[r, p, t, S_v]
+        for S_o in M.ProcessOutputsByInput[r, p, t, S_v, S_i]
+        for s in M.season_to_month_map[m]
+        for d in M.time_of_day
+    )
+
+    min_cf = value(M.MinMonthlyCapacityFactor[r, p, m, t])
+    max_possible_activity_rpmt = (
+            M.V_CapacityAvailableByPeriodAndTech[r, p, t] * M.CapacityToActivity[r, t] * fraction_of_year[m]
+    ) # TODO: Use M.time_month values instead of assuming 1, 2, 3, ..., 12
+
+    expr = activity_rpmt >= min_cf * max_possible_activity_rpmt
+    # in the case that there is nothing to sum, skip
+    if isinstance(expr, bool):  # an empty list was generated
+        return Constraint.Skip
+    return expr
 
 def MinActivityGroup_Constraint(M: 'TemoaModel', r, p, g):
     r"""
@@ -2252,6 +2399,50 @@ def MinActivityGroup_Constraint(M: 'TemoaModel', r, p, g):
         return Constraint.Skip
     return expr
 
+def MinSeasonalActivity_Constraint(M: 'TemoaModel', r, p, s, t):
+    r"""
+
+    The MinSeasonalActivity sets a lower bound on the activity from a specific
+    technology in a specific 'time_season'.
+    Note that the indices for these constraints are region, period, season and tech, not tech
+    and vintage. The first version of the constraint pertains to technologies with
+    variable output at the time slice level, and the second version pertains to
+    technologies with constant annual output belonging to the :code:`tech_annual`
+    set.
+
+    .. math::
+       :label: MinSeasonalActivity
+
+       \sum_{S,D,I,V,O} \textbf{FO}_{r, p, s, d, i, t, v, o}  \ge MSA_{r, p, s, t}
+
+       \forall \{r, p s, t\} \in \Theta_{\text{MinSeasonalActivity}}
+
+    """
+    # r can be an individual region (r='US'), or a combination of regions separated by
+    # a + (r='Mexico+US+Canada'), or 'global'.
+    # if r == 'global', the constraint is system-wide
+    if r == 'global':
+        reg = M.regions
+    elif '+' in r:
+        reg = r.split('+')
+    else:
+        reg = (r,)
+
+    activity_rpt = sum(
+        M.V_FlowOut[r, p, s, d, S_i, t, S_v, S_o]
+        for r in reg
+        for S_v in M.processVintages.get((r, p, t), [])
+        for S_i in M.processInputs[r, p, t, S_v]
+        for S_o in M.ProcessOutputsByInput[r, p, t, S_v, S_i]
+        for d in M.time_of_day
+    )
+
+    min_act = value(M.MinSeasonalActivity[r, p, s, t])
+    expr = activity_rpt >= min_act
+    # in the case that there is nothing to sum, skip
+    if isinstance(expr, bool):  # an empty list was generated
+        return Constraint.Skip
+    return expr
 
 def MaxActivityGroup_Constraint(M: 'TemoaModel', r, p, g):
     r"""

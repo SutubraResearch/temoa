@@ -129,6 +129,8 @@ class TemoaModel(AbstractModel):
         # Define the model time slices
         M.time_season = Set(ordered=True)
         M.time_of_day = Set(ordered=True)
+        M.time_month = Set(ordered=True)
+        M.season_to_month_map = Set(within=M.time_month * M.time_season)
 
         # Define regions
         M.regions = Set(validate=region_check)
@@ -343,6 +345,14 @@ class TemoaModel(AbstractModel):
         # M.MaxCapacitySum = Param(M.time_optimize)  # for techs in tech_capacity
         M.MaxActivity = Param(M.RegionalGlobalIndices, M.time_optimize, M.tech_all)
         M.MinActivity = Param(M.RegionalGlobalIndices, M.time_optimize, M.tech_all)
+        M.MaxSeasonalActivity = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
+        M.MinSeasonalActivity = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
+        M.MaxDailyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
+        M.MinDailyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
+        M.MaxMonthlyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.time_month,
+                                      M.tech_all - M.tech_annual)
+        M.MinMonthlyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.time_month,
+                                      M.tech_all - M.tech_annual)
         M.MinAnnualCapacityFactor = Param(
             M.RegionalGlobalIndices, M.time_optimize, M.tech_all, M.commodity_carrier
         )
@@ -687,11 +697,25 @@ class TemoaModel(AbstractModel):
             M.MaxActivityConstraint_rpt, rule=MaxActivity_Constraint
         )
 
+        M.MaxSeasonalActivityConstraint_rpst = Set(
+            dimen=4, initialize=lambda M: M.MaxSeasonalActivity.sparse_iterkeys()
+        )
+        M.MaxSeasonalActivityConstraint = Constraint(
+            M.MaxSeasonalActivityConstraint_rpst, rule=MaxSeasonalActivity_Constraint
+        )
+
         M.MinActivityConstraint_rpt = Set(
             dimen=3, initialize=lambda M: M.MinActivity.sparse_iterkeys()
         )
         M.MinActivityConstraint = Constraint(
             M.MinActivityConstraint_rpt, rule=MinActivity_Constraint
+        )
+
+        M.MinSeasonalActivityConstraint_rpst = Set(
+            dimen=4, initialize=lambda M: M.MinSeasonalActivity.sparse_iterkeys()
+        )
+        M.MinSeasonalActivityConstraint = Constraint(
+            M.MinSeasonalActivityConstraint_rpst, rule=MinSeasonalActivity_Constraint
         )
 
         M.MinActivityGroup_rpg = Set(
@@ -814,6 +838,34 @@ class TemoaModel(AbstractModel):
         )
         M.MinNewCapacityConstraint = Constraint(
             M.MinNewCapacityConstraint_rpt, rule=MinNewCapacity_Constraint
+        )
+
+        M.MinDailyCapacityFactorConstraint_rpst = Set(
+            dimen=4, initialize=lambda M: M.MinDailyCapacityFactor.sparse_iterkeys()
+        )
+        M.MinDailyCapacityFactorConstraint = Constraint(
+            M.MinDailyCapacityFactorConstraint_rpst, rule=MinDailyCapacityFactor_Constraint
+        )
+
+        M.MaxDailyCapacityFactorConstraint_rpst = Set(
+            dimen=4, initialize=lambda M: M.MaxDailyCapacityFactor.sparse_iterkeys()
+        )
+        M.MaxDailyCapacityFactorConstraint = Constraint(
+            M.MaxDailyCapacityFactorConstraint_rpst, rule=MaxDailyCapacityFactor_Constraint
+        )
+
+        M.MinMonthlyCapacityFactorConstraint_rpmt = Set(
+            dimen=4, initialize=lambda M: M.MinMonthlyCapacityFactor.sparse_iterkeys()
+        )
+        M.MinMonthlyCapacityFactorConstraint = Constraint(
+            M.MinMonthlyCapacityFactorConstraint_rpmt, rule=MinMonthlyCapacityFactor_Constraint
+        )
+
+        M.MaxMonthlyCapacityFactorConstraint_rpmt = Set(
+            dimen=4, initialize=lambda M: M.MaxMonthlyCapacityFactor.sparse_iterkeys()
+        )
+        M.MaxMonthlyCapacityFactorConstraint = Constraint(
+            M.MaxMonthlyCapacityFactorConstraint_rpmt, rule=MaxMonthlyCapacityFactor_Constraint
         )
 
         M.MinAnnualCapacityFactorConstraint_rpto = Set(
