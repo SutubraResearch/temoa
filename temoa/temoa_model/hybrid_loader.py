@@ -569,6 +569,16 @@ class HybridLoader:
         raw = cur.execute('SELECT season FROM main.TimeSeason ORDER BY sequence').fetchall()
         load_element(M.time_season, raw)
 
+        # time_month
+        raw = cur.execute('SELECT month FROM main.TimeMonth ORDER BY sequence').fetchall()
+        load_element(M.time_month, raw)
+
+        # season_to_month_map
+        raw = cur.execute(
+            'SELECT month, season FROM main.MonthToSeasonMap'
+        ).fetchall()
+        load_element(M.season_to_month_map, raw)
+
         # myopic_base_year
         if mi:
             raw = cur.execute(
@@ -1210,7 +1220,7 @@ class HybridLoader:
             ).fetchall()
             load_element(M.MinMonthlyCapacityFactor, raw, self.viable_rt, (0, 1))
 
-        # MaxDailyCapacityFactor
+        # MaxMonthlyCapacityFactor
         if self.table_exists('MaxMonthlyCapacityFactor'):
             raw = cur.execute(
                 'SELECT region, tech, month, factor FROM main.MaxMonthlyCapacityFactor'
