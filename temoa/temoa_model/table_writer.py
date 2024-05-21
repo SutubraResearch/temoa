@@ -7,6 +7,7 @@ from collections import defaultdict, namedtuple
 from enum import Enum, unique
 from logging import getLogger
 from typing import TYPE_CHECKING
+from itertools import groupby
 
 from pyomo.core import value, Objective
 from pyomo.opt import SolverResults
@@ -61,12 +62,13 @@ all_output_tables = [
     'OutputEmission',
     'OutputFlowIn',
     'OutputFlowOut',
+    'OutputFlowOutAnnual',
     'OutputNetCapacity',
     'OutputObjective',
     'OutputRetiredCapacity',
 ]
 
-
+REPORT_HOURLY_FLOWS = True # TODO: Move this to configuration file.
 def _marks(num: int) -> str:
     """convenience to make a sequence of question marks for query"""
     qs = ','.join('?' for _ in range(num))
@@ -106,7 +108,7 @@ def rpetv(fi: FI, e: str) -> tuple:
 class TableWriter:
     def __init__(self, config: TemoaConfig, epsilon=1e-5):
         self.config = config
-        self.epsilon = epsilon
+        self.epsilon = 1 # epsilon
         self.tech_sectors: dict[str, str] | None = None
         self.flow_register: dict[FI, dict[FlowType, float]] = {}
         self.emission_register: dict[EI, float] | None = None
@@ -261,11 +263,32 @@ class TableWriter:
             FlowType.FLEX: 'OutputCurtailment',
         }
 
-        for flow_type, table_name in table_associations.items():
-            qry = f'INSERT INTO {table_name} VALUES {_marks(11)}'
-            self.con.executemany(qry, flows_by_type[flow_type])
+        if REPORT_HOURLY_FLOWS:
+            for flow_type, table_name in table_associations.items():
+                qry = f'INSERT INTO {table_name} VALUES {_marks(11)}'
+                self.con.executemany(qry, flows_by_type[flow_type])
 
-        self.con.commit()
+            self.con.commit()
+
+        # Report Annual Output Flows
+        # TODO: Optimize this code. It might be very slow.
+        if FlowType.OUT in flows_by_type:
+            annual_output_flows = []
+            # Group by scenario, fi.r, sector, fi.p, fi.i, fi.t, fi.v, and fi.o, summing across fi.s and fi.d
+            flows_by_type_out_sorted = sorted(flows_by_type[FlowType.OUT],
+                                              key=lambda x: (x[0], x[1], x[2], x[3], x[6], x[7], x[8], x[9]))
+            for key, group in groupby(flows_by_type_out_sorted,
+                                                lambda x: (x[0], x[1], x[2], x[3], x[6], x[7], x[8], x[9])):
+                total_val = sum(item[10] for item in group)
+                annual_entry = (*key, total_val)
+                annual_output_flows.append(annual_entry)
+
+            # Insert annual_output_flows into OutputFlowOutAnnual table
+            qry = f'INSERT INTO OutputFlowOutAnnual VALUES {_marks(9)}'
+            self.con.executemany(qry, annual_output_flows)
+
+
+
 
     def check_flow_balance(self, M: TemoaModel) -> bool:
         """An easy sanity check to ensure that the flow tables are balanced, except for storage"""
@@ -352,6 +375,7 @@ class TableWriter:
                 flow = value(M.V_FlowOut[fi]) / value(M.Efficiency[ritvo(fi)])
                 res[fi][FlowType.IN] = flow
                 res[fi][FlowType.LOST] = (1 - value(M.Efficiency[ritvo(fi)])) * flow
+
 
         # curtailment flows
         for key in M.V_Curtailment:
