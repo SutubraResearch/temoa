@@ -47,6 +47,7 @@ from pyomo.environ import (
 )
 from pyomo.opt import SolverResults
 
+from temoa.data_processing.DB_to_Excel import make_excel
 from temoa.temoa_model.table_writer import TableWriter
 from temoa.temoa_model.temoa_config import TemoaConfig
 from temoa.temoa_model.temoa_model import TemoaModel
@@ -253,8 +254,15 @@ def solve_instance(
             # (see: https://pypsa-eur.readthedocs.io/en/latest/configuration.html)
             optimizer.options['lpmethod'] = 4  # barrier
             optimizer.options['solutiontype'] = 2  # non basic solution, ie no crossover
-            optimizer.options['barrier convergetol'] = 1.0e-5
-            optimizer.options['feasopt tolerance'] = 1.0e-6
+            optimizer.options['barrier convergetol'] = 1.0e-4
+            optimizer.options['feasopt tolerance'] = 1.0e-4
+
+        elif solver_name == 'gurobi':
+            # Note: these parameter values are taken to be the same as those in PyPSA (see: https://pypsa-eur.readthedocs.io/en/latest/configuration.html)
+            optimizer.options["Method"] = 2  # barrier
+            optimizer.options["Crossover"] = 0  # non basic solution, ie no crossover
+            optimizer.options["BarConvTol"] = 1.e-4
+            optimizer.options["FeasibilityTol"] = 1.e-4
 
         elif solver_name == 'appsi_highs':
             pass
@@ -346,6 +354,15 @@ def handle_results(instance: TemoaModel, results, options: TemoaConfig):
         SE.write('\r[%8.2f] Results processed.\n' % (time() - hack))
         SE.flush()
 
+    if options.save_excel:
+        temp_scenario = set()
+        temp_scenario.add(options.scenario)
+        # make_excel function imported near the top
+        excel_filename = options.output_path / options.scenario
+        make_excel(str(options.output_database), excel_filename, temp_scenario)
+    if not options.silent:
+        SE.write('\r[%8.2f] Results processed.\n' % (time() - hack))
+        SE.flush()
     # if options.stream_output:
     #     print(output_stream.getvalue())
     # normal (non-MGA) run will have a TotalCost as the OBJ:
