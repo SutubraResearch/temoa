@@ -570,12 +570,12 @@ class TemoaModel(AbstractModel):
         M.DemandConstraint_rpsdc = Set(dimen=5, initialize=DemandConstraintIndices)
         M.DemandConstraint = Constraint(M.DemandConstraint_rpsdc, rule=Demand_Constraint)
 
-        M.DemandActivityConstraint_rpsdtv_dem_s0d0 = Set(
-            dimen=9, initialize=DemandActivityConstraintIndices
-        )
-        M.DemandActivityConstraint = Constraint(
-            M.DemandActivityConstraint_rpsdtv_dem_s0d0, rule=DemandActivity_Constraint
-        )
+        # M.DemandActivityConstraint_rpsdtv_dem_s0d0 = Set(
+        #     dimen=9, initialize=DemandActivityConstraintIndices
+        # )
+        # M.DemandActivityConstraint = Constraint(
+        #     M.DemandActivityConstraint_rpsdtv_dem_s0d0, rule=DemandActivity_Constraint
+        # )
 
         M.CommodityBalanceConstraint_rpsdc = Set(
             dimen=5, initialize=CommodityBalanceConstraintIndices
