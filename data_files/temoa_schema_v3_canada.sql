@@ -556,6 +556,30 @@ CREATE TABLE IF NOT EXISTS MaxActivity
 	"additional_notes" text,
     PRIMARY KEY (region, period, tech)
 );
+CREATE TABLE IF NOT EXISTS MaxSeasonalActivity
+(
+    region  TEXT,
+    period  INTEGER
+        REFERENCES TimePeriod (period),
+    season      TEXT
+        REFERENCES TimeSeason (season),
+    tech    TEXT
+        REFERENCES Technology (tech),
+    max_act REAL,
+    units   TEXT,
+    notes   TEXT,
+    "reference" text,
+	"data_year" integer,
+	"data_flags" text,
+	"dq_est" integer,
+	"dq_rel" integer,
+	"dq_comp" integer,
+	"dq_time" integer,
+	"dq_geog" integer,
+	"dq_tech" integer,
+	"additional_notes" text,
+    PRIMARY KEY (region, period, season, tech)
+);
 CREATE TABLE IF NOT EXISTS MaxCapacity
 (
     region  TEXT,
@@ -619,6 +643,30 @@ CREATE TABLE IF NOT EXISTS MinActivity
 	"dq_tech" integer,
 	"additional_notes" text,
     PRIMARY KEY (region, period, tech)
+);
+CREATE TABLE IF NOT EXISTS MinSeasonalActivity
+(
+    region  TEXT,
+    period  INTEGER
+        REFERENCES TimePeriod (period),
+    season      TEXT
+        REFERENCES TimeSeason (season),
+    tech    TEXT
+        REFERENCES Technology (tech),
+    min_act REAL,
+    units   TEXT,
+    notes   TEXT,
+    "reference" text,
+	"data_year" integer,
+	"data_flags" text,
+	"dq_est" integer,
+	"dq_rel" integer,
+	"dq_comp" integer,
+	"dq_time" integer,
+	"dq_geog" integer,
+	"dq_tech" integer,
+	"additional_notes" text,
+    PRIMARY KEY (region, period, season, tech)
 );
 CREATE TABLE IF NOT EXISTS MaxCapacityGroup
 (
@@ -796,6 +844,25 @@ CREATE TABLE IF NOT EXISTS OutputFlowOut
         REFERENCES Commodity (name),
     flow        REAL,
     PRIMARY KEY (region, scenario, period, season, tod, input_comm, tech, vintage, output_comm)
+);
+CREATE TABLE IF NOT EXISTS OutputFlowOutAnnual
+(
+    scenario    TEXT,
+    region      TEXT,
+    sector      TEXT
+        REFERENCES SectorLabel (sector),
+    period      INTEGER
+        REFERENCES TimePeriod (period),
+    input_comm  TEXT
+        REFERENCES Commodity (name),
+    tech        TEXT
+        REFERENCES Technology (tech),
+    vintage     INTEGER
+        REFERENCES TimePeriod (period),
+    output_comm TEXT
+        REFERENCES Commodity (name),
+    flow        REAL,
+    PRIMARY KEY (region, scenario, period, input_comm, tech, vintage, output_comm)
 );
 CREATE TABLE IF NOT EXISTS PlanningReserveMargin
 (
@@ -1016,6 +1083,20 @@ CREATE TABLE IF NOT EXISTS TimeSeason
     reference TEXT,
     additional_notes TEXT
 );
+CREATE TABLE IF NOT EXISTS TimeMonth
+(
+    sequence INTEGER UNIQUE,
+    month   TEXT
+        PRIMARY KEY,
+    reference TEXT,
+    additional_notes TEXT
+);
+CREATE TABLE IF NOT EXISTS MonthToSeasonMap
+(
+    month   TEXT,
+    season TEXT,
+    PRIMARY KEY (month, season)
+);
 CREATE TABLE IF NOT EXISTS TimePeriodType
 (
     label       TEXT
@@ -1051,6 +1132,56 @@ CREATE TABLE IF NOT EXISTS MaxCapacityShare
     max_proportion REAL,
     notes          TEXT,
     PRIMARY KEY (region, period, tech, group_name)
+);
+CREATE TABLE IF NOT EXISTS MaxDailyCapacityFactor
+(
+    region      TEXT,
+    period      INTEGER
+        REFERENCES TimePeriod (period),
+    season      INTEGER
+        REFERENCES TimeSeason (season),
+    tech        TEXT
+        REFERENCES Technology (tech),
+    factor      REAL,
+    source      TEXT,
+    notes       TEXT,
+    "reference" text,
+	"data_year" integer,
+	"data_flags" text,
+	"dq_est" integer,
+	"dq_rel" integer,
+	"dq_comp" integer,
+	"dq_time" integer,
+	"dq_geog" integer,
+	"dq_tech" integer,
+	"additional_notes" text,
+    PRIMARY KEY (region, period, season, tech),
+    CHECK (factor >= 0 AND factor <= 1)
+);
+CREATE TABLE IF NOT EXISTS MaxMonthlyCapacityFactor
+(
+    region      TEXT,
+    period      INTEGER
+        REFERENCES TimePeriod (period),
+    month      INTEGER
+        REFERENCES TimeMonth (month),
+    tech        TEXT
+        REFERENCES Technology (tech),
+    factor      REAL,
+    source      TEXT,
+    notes       TEXT,
+    "reference" text,
+	"data_year" integer,
+	"data_flags" text,
+	"dq_est" integer,
+	"dq_rel" integer,
+	"dq_comp" integer,
+	"dq_time" integer,
+	"dq_geog" integer,
+	"dq_tech" integer,
+	"additional_notes" text,
+    PRIMARY KEY (region, period, month, tech),
+    CHECK (factor >= 0 AND factor <= 1)
 );
 CREATE TABLE IF NOT EXISTS MaxAnnualCapacityFactor
 (
@@ -1126,6 +1257,56 @@ CREATE TABLE IF NOT EXISTS MinActivityShare
     min_proportion REAL,
     notes          TEXT,
     PRIMARY KEY (region, period, tech, group_name)
+);
+CREATE TABLE IF NOT EXISTS MinDailyCapacityFactor
+(
+    region      TEXT,
+    period      INTEGER
+        REFERENCES TimePeriod (period),
+    season      INTEGER
+        REFERENCES TimeSeason (season),
+    tech        TEXT
+        REFERENCES Technology (tech),
+    factor      REAL,
+    source      TEXT,
+    notes       TEXT,
+    "reference" text,
+	"data_year" integer,
+	"data_flags" text,
+	"dq_est" integer,
+	"dq_rel" integer,
+	"dq_comp" integer,
+	"dq_time" integer,
+	"dq_geog" integer,
+	"dq_tech" integer,
+	"additional_notes" text,
+    PRIMARY KEY (region, period, season, tech),
+    CHECK (factor >= 0 AND factor <= 1)
+);
+CREATE TABLE IF NOT EXISTS MinMonthlyCapacityFactor
+(
+    region      TEXT,
+    period      INTEGER
+        REFERENCES TimePeriod (period),
+    month      INTEGER
+        REFERENCES TimeMonth (month),
+    tech        TEXT
+        REFERENCES Technology (tech),
+    factor      REAL,
+    source      TEXT,
+    notes       TEXT,
+    "reference" text,
+	"data_year" integer,
+	"data_flags" text,
+	"dq_est" integer,
+	"dq_rel" integer,
+	"dq_comp" integer,
+	"dq_time" integer,
+	"dq_geog" integer,
+	"dq_tech" integer,
+	"additional_notes" text,
+    PRIMARY KEY (region, period, month, tech),
+    CHECK (factor >= 0 AND factor <= 1)
 );
 CREATE TABLE IF NOT EXISTS MinAnnualCapacityFactor
 (
