@@ -228,6 +228,8 @@ class TemoaModel(AbstractModel):
         M.Demand = Param(M.regions, M.time_optimize, M.commodity_demand)
         M.initialize_Demands = BuildAction(rule=CreateDemands)
 
+        M.PeakLoad = Param(M.regions, M.time_optimize, mutable=True)
+        M.initialize_PeakLoad = BuildAction(rule=CreatePeakLoad)
         # TODO:  Revive this with the DB schema and refactor the associated constraint
         M.ResourceConstraint_rpr = Set(within=M.regions * M.time_optimize * M.commodity_physical)
 
@@ -663,8 +665,11 @@ class TemoaModel(AbstractModel):
             M.RampConstraintPeriod_rptv, rule=RampDownPeriod_Constraint
         )
 
-        M.ReserveMargin_rpsd = Set(dimen=4, initialize=ReserveMarginIndices)
-        M.ReserveMarginConstraint = Constraint(M.ReserveMargin_rpsd, rule=ReserveMargin_Constraint)
+        # M.ReserveMargin_rpsd = Set(dimen=4, initialize=ReserveMarginIndices)
+        # M.ReserveMarginConstraint = Constraint(M.ReserveMargin_rpsd, rule=ReserveMargin_Constraint)
+        M.ReserveMargin_rp = Set(dimen=2, initialize=ReserveMarginIndices)
+        M.ReserveMarginConstraint = Constraint(M.ReserveMargin_rp, rule=ReserveMargin_Constraint)
+
 
         M.EmissionLimitConstraint = Constraint(
             M.EmissionLimitConstraint_rpe, rule=EmissionLimit_Constraint

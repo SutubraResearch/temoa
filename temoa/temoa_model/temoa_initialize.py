@@ -469,6 +469,15 @@ def CreateDemands(M: 'TemoaModel'):
             raise ValueError(msg.format(dem, items, total))
     logger.debug('Finished creating demand distributions')
 
+def CreatePeakLoad(M: 'TemoaModel'):
+    # TODO: This needs to be updated. It assumes an 8760 model and the demand name.
+    for (r, p, c) in M.Demand.sparse_iterkeys():
+        if c != 'E_D_elc':
+            continue
+        peak = max(value(M.DemandSpecificDistribution[r, s, d, c]) for s in M.time_season for d in M.time_of_day)
+        peakload = peak * M.Demand[r, p, c]
+        M.PeakLoad[r, p] = peakload
+
 
 @deprecated(reason='vintage defaults are no longer available, so this should not be needed')
 def CreateCosts(M: 'TemoaModel'):
@@ -1285,16 +1294,21 @@ def RampConstraintPeriodIndices(M: 'TemoaModel'):
     return indices
 
 
+# def ReserveMarginIndices(M: 'TemoaModel'):
+#     indices = set(
+#         (r, p, s, d)
+#         for r in M.regions
+#         for p in M.time_optimize
+#         for s in M.time_season
+#         for d in M.time_of_day
+#     )
+#    return indices
 def ReserveMarginIndices(M: 'TemoaModel'):
     indices = set(
-        (r, p, s, d)
+        (r, p)
         for r in M.regions
-        for p in M.time_optimize
-        for s in M.time_season
-        for d in M.time_of_day
-    )
+        for p in M.time_optimize)
     return indices
-
 
 def TechInputSplitConstraintIndices(M: 'TemoaModel'):
     indices = set(
