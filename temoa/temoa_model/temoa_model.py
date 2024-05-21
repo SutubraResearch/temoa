@@ -283,7 +283,7 @@ class TemoaModel(AbstractModel):
         M.LifetimeProcess_rtv = Set(dimen=3, initialize=LifetimeProcessIndices)
         M.LifetimeProcess = Param(M.LifetimeProcess_rtv, default=get_default_process_lifetime)
 
-        M.LoanLifetimeTech = Param(M.RegionalIndices, M.tech_all, default=10)
+        M.LoanLifetimeTech = Param(M.RegionalIndices, M.tech_all, default=30)
         M.LoanLifetimeProcess_rtv = Set(dimen=3, initialize=LifetimeLoanProcessIndices)
 
         # Dev Note:  The LoanLifetimeProcess table *could* be removed.  There is no longer a supporting
