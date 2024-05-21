@@ -65,6 +65,7 @@ class MyopicSequencer:
         'OutputEmission',
         'OutputFlowIn',
         'OutputFlowOut',
+        'OutputFlowOutAnnual',
         'OutputNetCapacity',
         'OutputObjective',
         'OutputRetiredCapacity',
@@ -82,6 +83,7 @@ class MyopicSequencer:
         'OutputEmission',
         'OutputFlowIn',
         'OutputFlowOut',
+        'OutputFlowOutAnnual',
         'OutputNetCapacity',
         'OutputRetiredCapacity',
     ]
