@@ -282,17 +282,30 @@ class TableWriter:
                 entry = (scenario, fi.r, sector, fi.p, fi.s, fi.d, fi.i, fi.t, fi.v, fi.o, val)
                 flows_by_type[flow_type].append(entry)
 
+        # table_associations = {
+        #     FlowType.OUT: 'OutputFlowOut',
+        #     FlowType.IN: 'OutputFlowIn',
+        #     FlowType.CURTAIL: 'OutputCurtailment',
+        #     FlowType.FLEX: 'OutputCurtailment',
+        # }
         table_associations = {
-            FlowType.OUT: 'OutputFlowOut',
-            FlowType.IN: 'OutputFlowIn',
-            FlowType.CURTAIL: 'OutputCurtailment',
-            FlowType.FLEX: 'OutputCurtailment',
+            FlowType.OUT: 'OutputFlowOut'
         }
-
+        # if REPORT_HOURLY_FLOWS:
+        #     for flow_type, table_name in table_associations.items():
+        #
+        #         qry = f'INSERT INTO {table_name} VALUES {_marks(11)}'
+        #         self.con.executemany(qry, flows_by_type[flow_type])
+        #
+        #     self.con.commit()
         if REPORT_HOURLY_FLOWS:
             for flow_type, table_name in table_associations.items():
+                # Filtered flows based on specified criteria
+                filtered_flows = [flow for flow in flows_by_type[flow_type] if
+                                  flow[1] in ['AB', 'ON'] and flow[3] in [2035, 2050]]
+
                 qry = f'INSERT INTO {table_name} VALUES {_marks(11)}'
-                self.con.executemany(qry, flows_by_type[flow_type])
+                self.con.executemany(qry, filtered_flows)
 
             self.con.commit()
 
