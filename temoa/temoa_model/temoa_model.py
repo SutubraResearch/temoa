@@ -128,7 +128,7 @@ class TemoaModel(AbstractModel):
         M.time_season = Set(ordered=True)
         M.time_of_day = Set(ordered=True)
         M.time_month = Set(ordered=True)
-        M.season_to_month_map = Set(within=M.time_month * M.time_season)
+        M.season_to_month_map = Set(within=M.time_month * M.time_season, ordered=True)
 
         # Define regions
         M.regions = Set(validate=region_check)
@@ -373,7 +373,8 @@ class TemoaModel(AbstractModel):
         M.MinSeasonalActivity = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
         M.MaxDailyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
         M.MinDailyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
-        M.MaxMonthlyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.time_month,
+        M.Months = Set(initialize=range(1, 13), doc='Months of the Year')
+        M.MaxMonthlyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.Months,
                                       M.tech_all - M.tech_annual)
         M.MinMonthlyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.time_month,
                                       M.tech_all - M.tech_annual)
@@ -409,7 +410,6 @@ class TemoaModel(AbstractModel):
         M.MaxActivityGroup_rpg = Set(
             within=M.RegionalGlobalIndices * M.time_optimize * M.tech_group_names
         )
-
         M.MaxActivityGroup = Param(M.MaxActivityGroup_rpg)
 
         M.MinCapacityGroupConstraint_rpg = Set(
@@ -711,9 +711,9 @@ class TemoaModel(AbstractModel):
             M.MinSeasonalActivityConstraint_rpst, rule=MinSeasonalActivity_Constraint
         )
 
-        M.MinActivityGroup_rpg = Set(
-            dimen=3, initialize=lambda M: M.MinActivityGroup.sparse_iterkeys()
-        )
+        # M.MinActivityGroup_rpg = Set(
+        #     dimen=3, initialize=lambda M: M.MinActivityGroup.sparse_iterkeys()
+        # )
         M.MinActivityGroupConstraint = Constraint(
             M.MinActivityGroup_rpg, rule=MinActivityGroup_Constraint
         )
