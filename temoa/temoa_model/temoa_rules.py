@@ -2322,6 +2322,7 @@ def MinDailyCapacityFactor_Constraint(M: 'TemoaModel', r, p, s, t):
 def MaxMonthlyCapacityFactor_Constraint(M: 'TemoaModel', r, p, m, t):
 
     # TODO: Include docstring
+    # TODO: Clean this up. It is a mess.
 
     # Number of days in each month (for non-leap years)
     days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -2333,7 +2334,7 @@ def MaxMonthlyCapacityFactor_Constraint(M: 'TemoaModel', r, p, m, t):
         for S_v in M.processVintages.get((r, p, t), [])
         for S_i in M.processInputs[r, p, t, S_v]
         for S_o in M.ProcessOutputsByInput[r, p, t, S_v, S_i]
-        for s in M.season_to_month_map[m]
+        for (_m,s) in M.season_to_month_map if int(_m) == int(m)
         for d in M.time_of_day
     )
 
