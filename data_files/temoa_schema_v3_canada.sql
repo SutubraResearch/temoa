@@ -176,8 +176,6 @@ CREATE TABLE IF NOT EXISTS CostEmission
     cost      REAL NOT NULL,
     units     TEXT,
     notes     TEXT,
-    "reference" text,
-	"additional_notes" text,
     PRIMARY KEY (region, period, emis_comm)
 );
 CREATE TABLE IF NOT EXISTS CostFixed
@@ -1163,7 +1161,7 @@ CREATE TABLE IF NOT EXISTS MaxMonthlyCapacityFactor
     region      TEXT,
     period      INTEGER
         REFERENCES TimePeriod (period),
-    month      INTEGER
+    month      TEXT
         REFERENCES TimeMonth (month),
     tech        TEXT
         REFERENCES Technology (tech),
@@ -1288,7 +1286,7 @@ CREATE TABLE IF NOT EXISTS MinMonthlyCapacityFactor
     region      TEXT,
     period      INTEGER
         REFERENCES TimePeriod (period),
-    month      INTEGER
+    month      TEXT
         REFERENCES TimeMonth (month),
     tech        TEXT
         REFERENCES Technology (tech),
