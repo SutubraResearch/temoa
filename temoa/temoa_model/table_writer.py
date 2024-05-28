@@ -302,7 +302,7 @@ class TableWriter:
             for flow_type, table_name in table_associations.items():
                 # Filtered flows based on specified criteria
                 filtered_flows = [flow for flow in flows_by_type[flow_type] if
-                                  flow[1] in ['AB', 'ON'] and flow[3] in [2035, 2050]]
+                                  flow[1] in ['AB', 'ON', 'ON-QC', 'QC-ON', 'AB-BC', 'BC-AB', 'SK-AB', 'AB-SK'] and flow[3] in [2035, 2050]]
 
                 qry = f'INSERT INTO {table_name} VALUES {_marks(11)}'
                 self.con.executemany(qry, filtered_flows)
