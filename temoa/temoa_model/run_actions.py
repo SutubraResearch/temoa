@@ -261,7 +261,7 @@ def solve_instance(
             # Note: these parameter values are taken to be the same as those in PyPSA (see: https://pypsa-eur.readthedocs.io/en/latest/configuration.html)
             optimizer.options["Method"] = 2  # barrier
             optimizer.options["Crossover"] = 0  # non basic solution, ie no crossover
-            optimizer.options["BarConvTol"] = 1.e-4
+            optimizer.options["BarConvTol"] = 1.e-3
             optimizer.options["FeasibilityTol"] = 1.e-4
 
         elif solver_name == 'appsi_highs':
@@ -289,7 +289,7 @@ def solve_instance(
             if solver_name == 'appsi_highs' and not solver_suffixes:
                 result: SolverResults = optimizer.solve(instance)
             else:  # we can try it...
-                result: SolverResults = optimizer.solve(instance, suffixes=solver_suffixes)
+                result: SolverResults = optimizer.solve(instance, tee=True, symbolic_solver_labels=True,suffixes=solver_suffixes)
         except RuntimeError as error:
             logger.error('Solver failed to solve and returned an error: %s', error)
             logger.error(
