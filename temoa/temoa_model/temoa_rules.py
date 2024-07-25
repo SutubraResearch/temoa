@@ -2275,7 +2275,6 @@ def MaxSeasonalActivity_Constraint(M: 'TemoaModel', r, p, s, t):
     return expr
 
 def MaxDailyCapacityFactor_Constraint(M: 'TemoaModel', r, p, s, t):
-
     # TODO: Include docstring
     activity_rpst = sum(
         M.V_FlowOut[r, p, s, d, S_i, t, S_v, S_o]
@@ -2340,7 +2339,7 @@ def MaxMonthlyCapacityFactor_Constraint(M: 'TemoaModel', r, p, m, t):
 
     max_cf = value(M.MaxMonthlyCapacityFactor[r, p, m, t])
     max_possible_activity_rpmt = (
-            M.V_CapacityAvailableByPeriodAndTech[r, p, t] * M.CapacityToActivity[r, t] * fraction_of_year[m]
+            M.V_CapacityAvailableByPeriodAndTech[r, p, t] * M.CapacityToActivity[r, t] * fraction_of_year[int(m)]
     ) # TODO: Use M.time_month values instead of assuming 1, 2, 3, ..., 12
 
     expr = activity_rpmt <= max_cf * max_possible_activity_rpmt
@@ -2369,7 +2368,7 @@ def MinMonthlyCapacityFactor_Constraint(M: 'TemoaModel', r, p, m, t):
 
     min_cf = value(M.MinMonthlyCapacityFactor[r, p, m, t])
     max_possible_activity_rpmt = (
-            M.V_CapacityAvailableByPeriodAndTech[r, p, t] * M.CapacityToActivity[r, t] * fraction_of_year[m]
+            M.V_CapacityAvailableByPeriodAndTech[r, p, t] * M.CapacityToActivity[r, t] * fraction_of_year[int(m)]
     ) # TODO: Use M.time_month values instead of assuming 1, 2, 3, ..., 12
 
     expr = activity_rpmt >= min_cf * max_possible_activity_rpmt
@@ -3069,6 +3068,51 @@ def MaxAnnualCapacityFactor_Constraint(M: 'TemoaModel', r, p, t, o):
     )
     max_annual_cf = value(M.MaxAnnualCapacityFactor[r, p, t, o])
     expr = activity_rpt <= max_annual_cf * max_possible_activity_rpt
+    # in the case that there is nothing to sum, skip
+    if isinstance(expr, bool):  # an empty list was generated
+        return Constraint.Skip
+    return expr
+
+def MaxAnnualCapacityFactorVintage_Constraint(M: 'TemoaModel', r, p, t, v, o):
+    r"""
+    The MaxAnnualCapacityFactor sets an upper bound on the annual capacity factor
+    from a specific technology. The first portion of the constraint pertains to
+    technologies with variable output at the time slice level, and the second portion
+    pertains to technologies with constant annual output belonging to the
+    :code:`tech_annual` set.
+    .. math::
+       :label: MaxAnnualCapacityFactor
+       \sum_{S,D,I,V,O} \textbf{FO}_{r, p, s, d, i, t, v, o} \le MAXCF_{r, p, t} * \textbf{CAPAVL}_{r, p, t} * \text{C2A}_{r, t}
+       \forall \{r, p, t, o\} \in \Theta_{\text{MaxAnnualCapacityFactor}}
+       \sum_{I,V,O} \textbf{FOA}_{r, p, i, t, v, o} \ge MAXCF_{r, p, t} * \textbf{CAPAVL}_{r, p, t} * \text{C2A}_{r, t}
+       \forall \{r, p, t, o \in T^{a}\} \in \Theta_{\text{MaxAnnualCapacityFactor}}"""
+    # r can be an individual region (r='US'), or a combination of regions separated by plus (r='Mexico+US+Canada'), or 'global'.
+    # if r == 'global', the constraint is system-wide
+    regions = gather_group_regions(M, r)
+    if (r, p, t, v) not in M.V_Capacity:
+        return Constraint.Skip
+    if t not in M.tech_annual:
+        activity_rpt = sum(
+            M.V_FlowOut[_r, p, s, d, S_i, t, v, o]
+            for _r in regions
+            for S_i in M.processInputs[_r, p, t, v]
+            for s in M.time_season
+            for d in M.time_of_day
+            if (_r, p, s, d, S_i, t, v, o) in M.V_FlowOut
+        )
+    else:
+        activity_rpt = sum(
+            M.V_FlowOutAnnual[_r, p, S_i, t, v, o]
+            for _r in regions
+            for S_i in M.processInputs[_r, p, t, v]
+            if (_r, p, S_i, t, v, o) in M.V_FlowOutAnnual
+        )
+
+    max_possible_activity_rptv = (
+        M.V_Capacity[r, p, t, v] * M.CapacityToActivity[r, t]
+    )
+    max_annual_cf = value(M.MaxAnnualCapacityFactorVintage[r, p, t, v, o])
+    expr = activity_rpt <= max_annual_cf * max_possible_activity_rptv
     # in the case that there is nothing to sum, skip
     if isinstance(expr, bool):  # an empty list was generated
         return Constraint.Skip

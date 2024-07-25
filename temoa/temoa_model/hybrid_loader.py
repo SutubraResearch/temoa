@@ -1052,6 +1052,20 @@ class HybridLoader:
             ).fetchall()
             load_element(M.MaxAnnualCapacityFactor, raw, self.viable_rt, (0, 2))
 
+        # MaxAnnualCapacityFactorVintage
+        if self.table_exists('MaxAnnualCapacityFactorVintage'):
+            if mi:
+                raw = cur.execute(
+                    'SELECT region, period, tech, vintage, output_comm, factor FROM main.MaxAnnualCapacityFactorVintage '
+                    'WHERE period >= ? AND period <= ?',
+                    (mi.base_year, mi.last_demand_year),
+                ).fetchall()
+            else:
+                raw = cur.execute(
+                    'SELECT region, period, tech, vintage, output_comm, factor FROM main.MaxAnnualCapacityFactorVintage'
+                ).fetchall()
+            load_element(M.MaxAnnualCapacityFactorVintage, raw, self.viable_rt, (0, 2))
+
         # GrowthRateMax
         if self.table_exists('GrowthRateMax'):
             raw = cur.execute('SELECT region, tech, rate FROM main.GrowthRateMax').fetchall()
@@ -1179,6 +1193,7 @@ class HybridLoader:
             M.MaxActivityGroup.name: M.MaxActivityGroup_rpg.name,
             M.MaxActivityShare.name: M.MaxActivityShareConstraint_rptg.name,
             M.MaxAnnualCapacityFactor.name: M.MaxAnnualCapacityFactorConstraint_rpto.name,
+            M.MaxAnnualCapacityFactorVintage.name: M.MaxAnnualCapacityFactorVintageConstraint_rptvo.name,
             M.MaxCapacity.name: M.MaxCapacityConstraint_rpt.name,
             M.MaxCapacityGroup.name: M.MaxCapacityGroupConstraint_rpg.name,
             M.MaxCapacityShare.name: M.MaxCapacityShareConstraint_rptg.name,
