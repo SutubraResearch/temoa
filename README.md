@@ -1,3 +1,20 @@
+# Temoa-Canada
+
+This branch of the Temoa model concerns itself with aspects unique to Canada -- or at least sufficiently unique so as not to merit a pull request into the main branch. This branch is used as the basis for several projects undertaken by Sutubra Research and partners:
+
+1. A sponsored project by Net Zero Atlantic: [*Exploring pathways to net-zero: utilizing advanced energy system modelling to investigate the impact of long-duration energy storage on Nova Scotia's energy transition*](https://netzeroatlantic.ca/research/exploring-pathways-net-zero-utilizing-advanced-energy-system-modelling)
+2. An intercomparison study of Canadian power system planning models. This work is sponsored by the [Energy Modelling Hub](https://cme-emh.ca/en/) and results will presumably released summer 2024.
+
+Below are the items unique to this 'canada' branch:
+
+1. Output Based Pricing System (OBPS). This branch includes an explicit treatment of Canada's OBPS framework.
+2. An enhanced treatment of hydroelectric generators. We define three types of hydro generators: run-of-river, daily storage, and monthly storage. This branch includes new constraints for daily and monthly storage options, which enable users to set daily or monthly energy budgets for hydro assets.
+3. An improved treatment of energy storage technologies. This branch is designed to run in an "8760" mode -- or modelling each hour of the year sequentially. In contrast to using time slices or representative days, this allows us to remove some abstractions around storage technologies and better represent their behaviour and value.
+4. Wind and solar integration constrains.
+5. Additional constraints required to model the proposed Clean Electricity Regulations.
+
+A final note: the intention is to keep this branch up-to-date with the main branch. Below you will find the README of the main branch, which still applies in full here:
+
 # Getting Started with TEMOA and Version 3
 
 ## Overview
