@@ -1206,6 +1206,32 @@ CREATE TABLE IF NOT EXISTS MaxAnnualCapacityFactor
     PRIMARY KEY (region, period, tech),
     CHECK (factor >= 0 AND factor <= 1)
 );
+CREATE TABLE IF NOT EXISTS MaxAnnualCapacityFactorVintage
+(
+    region      TEXT,
+    period      INTEGER
+        REFERENCES TimePeriod (period),
+    tech        TEXT
+        REFERENCES Technology (tech),
+    vintage     INTEGER
+        REFERENCES TimePeriod (period),
+    output_comm TEXT
+        REFERENCES Commodity (name),
+    factor      REAL,
+    notes       TEXT,
+    "reference" text,
+	"data_year" integer,
+	"data_flags" text,
+	"dq_est" integer,
+	"dq_rel" integer,
+	"dq_comp" integer,
+	"dq_time" integer,
+	"dq_geog" integer,
+	"dq_tech" integer,
+	"additional_notes" text,
+    PRIMARY KEY (region, period, tech, vintage),
+    CHECK (factor >= 0 AND factor <= 1)
+);
 CREATE TABLE IF NOT EXISTS MaxNewCapacity
 (
     region  TEXT,
