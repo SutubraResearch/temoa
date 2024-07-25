@@ -104,6 +104,7 @@ direct_transfer_tables = [
     ('',                    'MaxDailyCapacityFactor'),
     ('',                    'MaxMonthlyCapacityFactor'),
     ('',                    'MaxAnnualCapacityFactor'),
+    ('',                    'MaxAnnualCapacityFactorVintage'),
     ('',                    'MaxCapacity'),
     ('',                    'MaxCapacityShare'),
     ('',                    'MaxNewCapacity'),
