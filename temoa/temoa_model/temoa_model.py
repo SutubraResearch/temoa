@@ -374,6 +374,8 @@ class TemoaModel(AbstractModel):
         M.MinActivityConstraint_rpt = Set(
             within=M.RegionalGlobalIndices * M.time_optimize * M.tech_all
         )
+        M.MinActivity = Param(M.MinActivityConstraint_rpt)
+
         M.MaxActivity = Param(M.RegionalGlobalIndices, M.time_optimize, M.tech_all)
         M.MinActivity = Param(M.RegionalGlobalIndices, M.time_optimize, M.tech_all)
         M.MaxSeasonalActivity = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
@@ -705,12 +707,12 @@ class TemoaModel(AbstractModel):
             M.MaxSeasonalActivityConstraint_rpst, rule=MaxSeasonalActivity_Constraint
         )
 
-        M.MinActivityConstraint_rpt = Set(
-            dimen=3, initialize=lambda M: M.MinActivity.sparse_iterkeys()
-        )
-        M.MinActivityConstraint = Constraint(
-            M.MinActivityConstraint_rpt, rule=MinActivity_Constraint
-        )
+        # M.MinActivityConstraint_rpt = Set(
+        #     dimen=3, initialize=lambda M: M.MinActivity.sparse_iterkeys()
+        # )
+        # M.MinActivityConstraint = Constraint(
+        #     M.MinActivityConstraint_rpt, rule=MinActivity_Constraint
+        # )
 
         M.MinSeasonalActivityConstraint_rpst = Set(
             dimen=4, initialize=lambda M: M.MinSeasonalActivity.sparse_iterkeys()
