@@ -701,12 +701,12 @@ class TemoaModel(AbstractModel):
             M.MaxSeasonalActivityConstraint_rpst, rule=MaxSeasonalActivity_Constraint
         )
 
-        # M.MinActivityConstraint_rpt = Set(
-        #     dimen=3, initialize=lambda M: M.MinActivity.sparse_iterkeys()
-        # )
-        # M.MinActivityConstraint = Constraint(
-        #     M.MinActivityConstraint_rpt, rule=MinActivity_Constraint
-        # )
+        M.MinActivityConstraint_rpt = Set(
+            dimen=3, initialize=lambda M: M.MinActivity.sparse_iterkeys()
+        )
+        M.MinActivityConstraint = Constraint(
+            M.MinActivityConstraint_rpt, rule=MinActivity_Constraint
+        )
 
         M.MinSeasonalActivityConstraint_rpst = Set(
             dimen=4, initialize=lambda M: M.MinSeasonalActivity.sparse_iterkeys()
