@@ -376,8 +376,6 @@ class TemoaModel(AbstractModel):
         )
         M.MinActivity = Param(M.MinActivityConstraint_rpt)
 
-        M.MaxActivity = Param(M.RegionalGlobalIndices, M.time_optimize, M.tech_all)
-        M.MinActivity = Param(M.RegionalGlobalIndices, M.time_optimize, M.tech_all)
         M.MaxSeasonalActivity = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
         M.MinSeasonalActivity = Param(M.RegionalIndices, M.time_optimize, M.time_season, M.tech_all - M.tech_annual)
         M.MaxAnnualCapacityFactorVintage = Param(M.RegionalIndices, M.time_optimize, M.tech_all, M.vintage_all, M.commodity_all)
@@ -388,10 +386,6 @@ class TemoaModel(AbstractModel):
                                       M.tech_all - M.tech_annual)
         M.MinMonthlyCapacityFactor = Param(M.RegionalIndices, M.time_optimize, M.time_month,
                                       M.tech_all - M.tech_annual)
-        M.MinAnnualCapacityFactor = Param(
-            M.RegionalGlobalIndices, M.time_optimize, M.tech_all, M.commodity_carrier
-        )
-        M.MinActivity = Param(M.MinActivityConstraint_rpt)
 
         M.MinAnnualCapacityFactorConstraint_rpto = Set(
             within=M.RegionalGlobalIndices * M.time_optimize * M.tech_all * M.commodity_carrier
@@ -831,9 +825,6 @@ class TemoaModel(AbstractModel):
             M.MaxMonthlyCapacityFactorConstraint_rpmt, rule=MaxMonthlyCapacityFactor_Constraint
         )
 
-        M.MinAnnualCapacityFactorConstraint_rpto = Set(
-            dimen=4, initialize=lambda M: M.MinAnnualCapacityFactor.sparse_iterkeys()
-        )
         M.MinAnnualCapacityFactorConstraint = Constraint(
             M.MinAnnualCapacityFactorConstraint_rpto, rule=MinAnnualCapacityFactor_Constraint
         )
