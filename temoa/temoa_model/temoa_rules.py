@@ -2894,7 +2894,7 @@ def MaxHourlyIBRShare_Constraint(M: 'TemoaModel', r, p, g, dem, s, d):
     # in the case that there is nothing to sum, skip
     if isinstance(expr, bool):  # an empty list was generated
         return Constraint.Skip
-git sta
+
     return expr
 
 def MinAnnualCapacityFactor_Constraint(M: 'TemoaModel', r, p, t, o):
