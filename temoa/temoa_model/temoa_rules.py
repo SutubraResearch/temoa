@@ -2876,6 +2876,7 @@ def MaxHourlyIBRShare_Constraint(M: 'TemoaModel', r, p, g, dem, s, d):
     regions = gather_group_regions(M, r)
 
     activity_p = 0
+    demand = 0
     for r_i in regions:
         activity_p += sum(
             M.V_FlowOut[r_i, p, s, d, S_i, S_t, S_v, S_o]
@@ -2886,11 +2887,12 @@ def MaxHourlyIBRShare_Constraint(M: 'TemoaModel', r, p, g, dem, s, d):
             for S_o in M.ProcessOutputsByInput[r_i, p, S_t, S_v, S_i]
             if (r_i, p, s, d, S_i, S_t, S_v, S_o) in M.V_FlowOut
         )
+        demand += value(M.Demand[r_i, p, dem]) * value(M.DemandSpecificDistribution[r_i, s, d, dem])
 
 
     share = value(M.MaxHourlyIBRShare[r, p, g, dem])
-    demand = value(M.Demand[r, p, dem]) * value(M.DemandSpecificDistribution[r, s, d, dem])
-    expr = activity_p  <= share * demand
+   # demand = value(M.Demand[r, p, dem]) * value(M.DemandSpecificDistribution[r, s, d, dem])
+    expr = activity_p <= share * demand
     # in the case that there is nothing to sum, skip
     if isinstance(expr, bool):  # an empty list was generated
         return Constraint.Skip
