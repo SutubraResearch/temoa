@@ -450,6 +450,9 @@ class TemoaModel(AbstractModel):
         M.MaxActivityShareConstraint_rptg = Set(within=M.GroupShareIndices)
         M.MaxActivityShare = Param(M.GroupShareIndices)
 
+        M.MaxHourlyIBRShareConstraint_rpgo = Set(within=M.RegionalGlobalIndices * M.time_optimize * M.tech_group_names * M.commodity_demand) # TODO: Improve this
+        M.MaxHourlyIBRShare = Param(M.MaxHourlyIBRShareConstraint_rpgo)
+
         M.MinNewCapacityShareConstraint_rptg = Set(within=M.GroupShareIndices)
         M.MinNewCapacityShare = Param(M.GroupShareIndices)
 
@@ -769,6 +772,11 @@ class TemoaModel(AbstractModel):
 
         M.MaxNewCapacityShareConstraint = Constraint(
             M.MaxNewCapacityShareConstraint_rptg, rule=MaxNewCapacityShare_Constraint
+        )
+
+        M.MaxHourlyIBRShareConstraint_rpgosd = Set(dimen=6, initialize=MaxHourlyIBRShareConstraintIndices)
+        M.MaxHourlyIBRShareConstraint = Constraint(
+            M.MaxHourlyIBRShareConstraint_rpgosd, rule=MaxHourlyIBRShare_Constraint
         )
 
         M.progress_marker_8 = BuildAction(

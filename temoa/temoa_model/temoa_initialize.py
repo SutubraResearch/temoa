@@ -1171,6 +1171,16 @@ def DemandConstraintIndices(M: 'TemoaModel'):
 
     return indices
 
+def MaxHourlyIBRShareConstraintIndices(M: 'TemoaModel'):
+    indices = set(
+        (r, p, g, dem, s, d)
+        for r, p, g, dem in M.MaxHourlyIBRShare.sparse_iterkeys()
+        for s in M.time_season
+        for d in M.time_of_day
+    )
+
+    return indices
+
 
 def BaseloadDiurnalConstraintIndices(M: 'TemoaModel'):
     indices = set(

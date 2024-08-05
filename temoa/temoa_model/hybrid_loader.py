@@ -64,6 +64,7 @@ tables_with_regional_groups = {
     'MaxActivityGroup': 'region',
     'MinCapacityGroup': 'region',
     'MaxCapacityGroup': 'region',
+    'MaxHourlyIBRShare': 'region',
 }
 
 
@@ -709,6 +710,7 @@ class HybridLoader:
                 ).fetchall()
             load_element(M.RenewablePortfolioStandard, raw)
 
+
         # CostFixed
         if mi:
             raw = cur.execute(
@@ -973,6 +975,20 @@ class HybridLoader:
                 'SELECT region, period, tech, group_name, max_proportion FROM main.MaxActivityShare'
             ).fetchall()
             load_element(M.MaxActivityShare, raw, self.viable_rt, (0, 2))
+
+        # MaxHourlyIBRShare
+        if self.table_exists('MaxHourlyIBRShare'):
+            if mi:
+                raw = cur.execute(
+                    'SELECT region, period, group_name, demand_comm, max_share FROM main.MaxHourlyIBRShare '
+                    ' WHERE period >= ? AND period <= ?',
+                    (mi.base_year, mi.last_demand_year),
+                ).fetchall()
+            else:
+                raw = cur.execute(
+                    'SELECT region, period, group_name, demand_comm, max_share FROM main.MaxHourlyIBRShare'
+                ).fetchall()
+            load_element(M.MaxHourlyIBRShare, raw)
 
         # MaxResource
         if self.table_exists('MaxResource'):
@@ -1293,6 +1309,7 @@ class HybridLoader:
             M.MinNewCapacityShare.name: M.MinNewCapacityShareConstraint_rptg.name,
             M.RenewablePortfolioStandard.name: M.RenewablePortfolioStandardConstraint_rpg.name,
             M.ResourceBound.name: M.ResourceConstraint_rpr.name,
+            M.MaxHourlyIBRShare.name: M.MaxHourlyIBRShareConstraint_rpgo.name,
         }
 
         res = {}

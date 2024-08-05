@@ -2870,6 +2870,33 @@ def MaxNewCapacityShare_Constraint(M: 'TemoaModel', r, p, t, g):
     return expr
 
 
+def MaxHourlyIBRShare_Constraint(M: 'TemoaModel', r, p, g, dem, s, d):
+    # TODO: Add DocString
+
+    regions = gather_group_regions(M, r)
+
+    activity_p = 0
+    for r_i in regions:
+        activity_p += sum(
+            M.V_FlowOut[r_i, p, s, d, S_i, S_t, S_v, S_o]
+            for S_t in M.tech_group_members[g]
+            if (r_i, p, S_t) in M.processVintages and S_t not in M.tech_annual
+            for S_v in M.processVintages[r_i, p, S_t]
+            for S_i in M.processInputs[r_i, p, S_t, S_v]
+            for S_o in M.ProcessOutputsByInput[r_i, p, S_t, S_v, S_i]
+            if (r_i, p, s, d, S_i, S_t, S_v, S_o) in M.V_FlowOut
+        )
+
+
+    share = value(M.MaxHourlyIBRShare[r, p, g, dem])
+    demand = value(M.Demand[r, p, dem]) * value(M.DemandSpecificDistribution[r, s, d, dem])
+    expr = activity_p  <= share * demand
+    # in the case that there is nothing to sum, skip
+    if isinstance(expr, bool):  # an empty list was generated
+        return Constraint.Skip
+git sta
+    return expr
+
 def MinAnnualCapacityFactor_Constraint(M: 'TemoaModel', r, p, t, o):
     r"""
     The MinAnnualCapacityFactor sets a lower bound on the annual capacity factor
