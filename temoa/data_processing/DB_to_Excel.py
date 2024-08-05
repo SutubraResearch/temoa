@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-from pyam import IamDataFrame
+#from pyam import IamDataFrame
 
 
 def make_excel(ifile, ofile: Path, scenario):
@@ -155,45 +155,45 @@ def make_excel(ifile, ofile: Path, scenario):
     writer._save()
 
     # prepare results for IamDataFrame
-    df_emissions_raw['scenario'] = scenario
-    df_emissions_raw['unit'] = '?'
-    df_emissions_raw['variable'] = (
-        'Emissions|' + df_emissions_raw['emis_comm'] + '|' + df_emissions_raw['tech']
-    )
-    df_emissions_raw.rename(columns={'period': 'year', 'emissions': 'value'}, inplace=True)
-
-    df_capacity['scenario'] = scenario
-    df_capacity['unit'] = '?'
-    df_capacity['variable'] = 'Capacity|' + df_capacity['sector'] + '|' + df_capacity['tech']
-    df_capacity.rename(columns={'period': 'year', 'capacity': 'value'}, inplace=True)
-
-    df_activity['scenario'] = scenario
-    df_activity['unit'] = '?'
-    df_activity['variable'] = 'Activity|' + df_activity['sector'] + '|' + df_activity['tech']
-    df_activity.rename(columns={'period': 'year', 'vflow_out': 'value'}, inplace=True)
-
-    # cast results to IamDataFrame and write to xlsx
-    columns = ['scenario', 'region', 'variable', 'year', 'value', 'unit']
-    _results = pd.concat([df_emissions_raw[columns], df_activity[columns], df_capacity[columns]])
-    df = IamDataFrame(_results, model='Temoa')
-
-    emiss = df_emissions_raw['emis_comm'].unique()
-    sector = df_capacity['sector'].unique()
-
-    # adding aggregates of emissions for each species
-    df.aggregate([f'Emissions|{q}' for q in emiss], append=True)
-
-    # adding aggregates of activity/capacity for each sector
-    prod = itertools.product(['Activity', 'Capacity'], sector)
-    df.aggregate([f'{t}|{s}' for t, s in prod], append=True)
-
-    # write IamDataFrame to xlsx
-    base_name = ofile.name.split('.')[0]
-    excel_pyam_filename = ofile.with_name(base_name + '_pyam.xlsx')
-    df.to_excel(excel_pyam_filename)
-
-    cur.close()
-    con.close()
+    # df_emissions_raw['scenario'] = scenario
+    # df_emissions_raw['unit'] = '?'
+    # df_emissions_raw['variable'] = (
+    #     'Emissions|' + df_emissions_raw['emis_comm'] + '|' + df_emissions_raw['tech']
+    # )
+    # df_emissions_raw.rename(columns={'period': 'year', 'emissions': 'value'}, inplace=True)
+    #
+    # df_capacity['scenario'] = scenario
+    # df_capacity['unit'] = '?'
+    # df_capacity['variable'] = 'Capacity|' + df_capacity['sector'] + '|' + df_capacity['tech']
+    # df_capacity.rename(columns={'period': 'year', 'capacity': 'value'}, inplace=True)
+    #
+    # df_activity['scenario'] = scenario
+    # df_activity['unit'] = '?'
+    # df_activity['variable'] = 'Activity|' + df_activity['sector'] + '|' + df_activity['tech']
+    # df_activity.rename(columns={'period': 'year', 'vflow_out': 'value'}, inplace=True)
+    #
+    # # cast results to IamDataFrame and write to xlsx
+    # columns = ['scenario', 'region', 'variable', 'year', 'value', 'unit']
+    # _results = pd.concat([df_emissions_raw[columns], df_activity[columns], df_capacity[columns]])
+    # df = IamDataFrame(_results, model='Temoa')
+    #
+    # emiss = df_emissions_raw['emis_comm'].unique()
+    # sector = df_capacity['sector'].unique()
+    #
+    # # adding aggregates of emissions for each species
+    # df.aggregate([f'Emissions|{q}' for q in emiss], append=True)
+    #
+    # # adding aggregates of activity/capacity for each sector
+    # prod = itertools.product(['Activity', 'Capacity'], sector)
+    # df.aggregate([f'{t}|{s}' for t, s in prod], append=True)
+    #
+    # # write IamDataFrame to xlsx
+    # base_name = ofile.name.split('.')[0]
+    # excel_pyam_filename = ofile.with_name(base_name + '_pyam.xlsx')
+    # df.to_excel(excel_pyam_filename)
+    #
+    # cur.close()
+    # con.close()
 
 
 def get_data(inputs):
