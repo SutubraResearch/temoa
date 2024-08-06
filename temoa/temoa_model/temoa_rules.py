@@ -1851,6 +1851,8 @@ Reformulated reserve margin constraint. This is used for a power system model, a
 returns the constraint for the peak load hour.
 
 """
+    if True:
+        return Constraint.Skip
 
     cap_avail = sum(
         value(M.CapacityCredit[r, p, t, v])

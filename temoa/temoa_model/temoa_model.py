@@ -466,7 +466,7 @@ class TemoaModel(AbstractModel):
         M.CapacityCredit = Param(
             M.RegionalIndices, M.time_optimize, M.tech_all, M.vintage_all, default=0
         )
-        #M.PlanningReserveMargin = Param(M.regions, default=0.2)
+        M.PlanningReserveMargin = Param(M.regions, default=0.2)
         # Storage duration is expressed in hours
         M.StorageDuration = Param(M.regions, M.tech_storage, default=4)
         # Initial storage charge level, expressed as fraction of full energy capacity.
@@ -674,8 +674,8 @@ class TemoaModel(AbstractModel):
 
         # M.ReserveMargin_rpsd = Set(dimen=4, initialize=ReserveMarginIndices)
         # M.ReserveMarginConstraint = Constraint(M.ReserveMargin_rpsd, rule=ReserveMargin_Constraint)
-        #M.ReserveMargin_rp = Set(dimen=2, initialize=ReserveMarginIndices)
-        #M.ReserveMarginConstraint = Constraint(M.ReserveMargin_rp, rule=ReserveMargin_Constraint)
+        M.ReserveMargin_rp = Set(dimen=2, initialize=ReserveMarginIndices)
+        M.ReserveMarginConstraint = Constraint(M.ReserveMargin_rp, rule=ReserveMargin_Constraint)
 
 
         M.EmissionLimitConstraint = Constraint(
