@@ -347,12 +347,15 @@ def CreateDemands(M: 'TemoaModel'):
     # Step 0: some setup for a couple of reusable items
 
     # iget(3): 3 = magic number to specify the fourth column.  Currently the
-    # demand in the tuple (r, s, d, dem)
-    DSD_dem_getter = iget(3)
+    # demand in the tuple (r, p, s, d, dem)
+    DSD_dem_getter = iget(4)
 
     # iget(0): 0 = magic number to specify the first column.  Currently the
-    # demand in the tuple (r, s, d, dem)
+    # demand in the tuple (r, p, s, d, dem)
     DSD_region_getter = iget(0)
+
+
+    DSD_period_getter = iget(1)
 
     # Step 1
     used_dems = set(dem for r, p, dem in M.Demand.sparse_iterkeys())
@@ -409,7 +412,7 @@ def CreateDemands(M: 'TemoaModel'):
         demands_specified
     )  # the demands not mentioned in DSD *at all*
     unset_distributions = set(
-        cross_product(M.regions, M.time_season, M.time_of_day, unset_demand_distributions)
+        cross_product(M.regions, M.time_optimize, M.time_season, M.time_of_day, unset_demand_distributions)
     )
 
     if unset_distributions:
@@ -418,20 +421,20 @@ def CreateDemands(M: 'TemoaModel'):
         # targeting values that have not yet been constructed, that we know are
         # valid, and that we will need.
         # DSD._constructed = False
-        for r, s, d, dem in unset_distributions:
-            DSD[r, s, d, dem] = DDD[s, d]  # DSD._constructed = True
+        for r, p, s, d, dem in unset_distributions:
+            DSD[r, p, s, d, dem] = DDD[s, d]  # DSD._constructed = True
 
     # Step 5: A final "sum to 1" check for all DSD members (which now should be everything)
     #         Also check that all keys are made...  The demand distro should be supported
     #         by the full set of (r, p, dem) keys because it is an equality constraint
     #         and we need to ensure even the zeros are passed in
     expected_key_length = len(M.time_season) * len(M.time_of_day)
-    used_reg_dems = set((r, dem) for r, p, dem in M.Demand.sparse_iterkeys())
-    for r, dem in used_reg_dems:
+    used_reg_dems = set((r, p, dem) for r, p, dem in M.Demand.sparse_iterkeys())
+    for r, p, dem in used_reg_dems:
         keys = [
             k
             for k in DSD.sparse_iterkeys()
-            if DSD_dem_getter(k) == dem and DSD_region_getter(k) == r
+            if DSD_dem_getter(k) == dem and DSD_region_getter(k) == r and DSD_period_getter(k) == p
         ]
         if len(keys) != expected_key_length:
             logger.debug(
@@ -448,7 +451,7 @@ def CreateDemands(M: 'TemoaModel'):
             keys = [
                 k
                 for k in DSD.sparse_iterkeys()
-                if DSD_dem_getter(k) == dem and DSD_region_getter(k) == r
+                if DSD_dem_getter(k) == dem and DSD_region_getter(k) == r and DSD_period_getter(k) == p
             ]
             key_padding = max(map(get_str_padding, keys))
 
@@ -475,7 +478,7 @@ def CreatePeakLoad(M: 'TemoaModel'):
     for (r, p, c) in M.Demand.sparse_iterkeys():
         if c != 'demand_elec':
             continue
-        peak = max(value(M.DemandSpecificDistribution[r, s, d, c]) for s in M.time_season for d in M.time_of_day)
+        peak = max(value(M.DemandSpecificDistribution[r, p, s, d, c]) for s in M.time_season for d in M.time_of_day)
         peakload = peak * M.Demand[r, p, c]
         M.PeakLoad[r, p] = peakload
 
@@ -1109,9 +1112,9 @@ ensure demand activity remains consistent across time slices.
     # needed data structures...
     # the count of techs that supply a commodity
     suppliers = defaultdict(set)
-    # (region, demand): (season, tod)  # the goal of the exercise!
+    # (region, period, demand): (season, tod)  # the goal of the exercise!
     anchor_season_tod = {}
-    # (region, demand): (period, tech, vintage) # the viable tech and vintage per region, demand
+    # (region, period, demand): (period, tech, vintage) # the viable tech and vintage per region, demand
     viable_tech_vintage = defaultdict(list)
 
     # start the loop over possible combos
@@ -1120,27 +1123,26 @@ ensure demand activity remains consistent across time slices.
         if dem not in M.commodity_demand or t in M.tech_annual:
             continue
         # capture the (p, t, v) in case we need to act on it
-        viable_tech_vintage[r, dem].append((p, t, v))
+        viable_tech_vintage[r, p, dem].append((p, t, v))
         suppliers[dem].add(t)  # one more recognized supplier
         if len(suppliers[dem]) > 1:
             # We need to act on (build) for this region-demand, put in a placeholder
-            anchor_season_tod[r, dem] = None
+            anchor_season_tod[r, p, dem] = None
 
     # Find the first timestep of the year where the demand is appreciably sized:
     #   appreciable = not so small that we get into numerical instability when applying small multipliers
     appreciable_size = 0.0001
-
-    for r, dem in anchor_season_tod:
+    for r, p, dem in anchor_season_tod:
         found_flag = False
         s0, d0 = None, None
         for s0, d0 in ((ss, dd) for ss in M.time_season for dd in M.time_of_day):
-            if (r, s0, d0, dem) in M.DemandSpecificDistribution.sparse_iterkeys():
-                if value(M.DemandSpecificDistribution[(r, s0, d0, dem)]) >= appreciable_size:
+            if (r, p, s0, d0, dem) in M.DemandSpecificDistribution.sparse_iterkeys():
+                if value(M.DemandSpecificDistribution[(r, p, s0, d0, dem)]) >= appreciable_size:
                     found_flag = True
                     break  # we have one with some value associated
         found = 'found' if found_flag else 'not found'
         # set it.  If nothing was found the first indices should work just fine...
-        anchor_season_tod[r, dem] = (s0, d0)
+        anchor_season_tod[r, p, dem] = (s0, d0)
         logger.debug(
             'Using season/tod: %s, %s for commodity %s in region %s which was %s in DSD '
             'to set DemandActivity baseline',
@@ -1152,13 +1154,13 @@ ensure demand activity remains consistent across time slices.
         )
 
     # Start yielding the constraint indices
-    for r, dem in anchor_season_tod:
+    for r, p, dem in anchor_season_tod:
         s0, d0 = anchor_season_tod[r, dem]
-        for p, t, v in viable_tech_vintage[r, dem]:
+        for p0, t, v in viable_tech_vintage[r, dem]:
             for s in M.time_season:
                 for d in M.time_of_day:
                     if s != s0 or d != d0:
-                        yield r, p, s, d, t, v, dem, s0, d0
+                        yield r, p0, s, d, t, v, dem, s0, d0
 
 
 def DemandConstraintIndices(M: 'TemoaModel'):

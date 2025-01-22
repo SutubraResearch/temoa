@@ -422,6 +422,8 @@ INSERT INTO Demand VALUES('utopia',2010,'TX',11.68999999999999951,'','');
 CREATE TABLE DemandSpecificDistribution
 (
     region      TEXT,
+    period    INTEGER
+        REFERENCES TimePeriod (period),
     season      TEXT
         REFERENCES TimeSeason (season),
     tod         TEXT
@@ -430,19 +432,41 @@ CREATE TABLE DemandSpecificDistribution
         REFERENCES Commodity (name),
     dds         REAL,
     dds_notes   TEXT,
-    PRIMARY KEY (region, season, tod, demand_name),
+    PRIMARY KEY (region, period, season, tod, demand_name),
     CHECK (dds >= 0 AND dds <= 1)
 );
-INSERT INTO DemandSpecificDistribution VALUES('utopia','inter','day','RH',0.1199999999999999956,'');
-INSERT INTO DemandSpecificDistribution VALUES('utopia','inter','night','RH',0.05999999999999999778,'');
-INSERT INTO DemandSpecificDistribution VALUES('utopia','winter','day','RH',0.5466999999999999638,'');
-INSERT INTO DemandSpecificDistribution VALUES('utopia','winter','night','RH',0.2732999999999999874,'');
-INSERT INTO DemandSpecificDistribution VALUES('utopia','inter','day','RL',0.1499999999999999945,'');
-INSERT INTO DemandSpecificDistribution VALUES('utopia','inter','night','RL',0.05000000000000000277,'');
-INSERT INTO DemandSpecificDistribution VALUES('utopia','summer','day','RL',0.1499999999999999945,'');
-INSERT INTO DemandSpecificDistribution VALUES('utopia','summer','night','RL',0.05000000000000000277,'');
-INSERT INTO DemandSpecificDistribution VALUES('utopia','winter','day','RL',0.5,'');
-INSERT INTO DemandSpecificDistribution VALUES('utopia','winter','night','RL',0.1000000000000000055,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'inter','day','RH',0.1199999999999999956,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'inter','night','RH',0.05999999999999999778,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'winter','day','RH',0.5466999999999999638,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'winter','night','RH',0.2732999999999999874,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'inter','day','RL',0.1499999999999999945,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'inter','night','RL',0.05000000000000000277,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'summer','day','RL',0.1499999999999999945,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'summer','night','RL',0.05000000000000000277,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'winter','day','RL',0.5,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',1990,'winter','night','RL',0.1000000000000000055,'');
+
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'inter','day','RH',0.1199999999999999956,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'inter','night','RH',0.05999999999999999778,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'winter','day','RH',0.5466999999999999638,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'winter','night','RH',0.2732999999999999874,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'inter','day','RL',0.1499999999999999945,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'inter','night','RL',0.05000000000000000277,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'summer','day','RL',0.1499999999999999945,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'summer','night','RL',0.05000000000000000277,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'winter','day','RL',0.5,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2000,'winter','night','RL',0.1000000000000000055,'');
+
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'inter','day','RH',0.1199999999999999956,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'inter','night','RH',0.05999999999999999778,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'winter','day','RH',0.5466999999999999638,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'winter','night','RH',0.2732999999999999874,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'inter','day','RL',0.1499999999999999945,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'inter','night','RL',0.05000000000000000277,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'summer','day','RL',0.1499999999999999945,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'summer','night','RL',0.05000000000000000277,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'winter','day','RL',0.5,'');
+INSERT INTO DemandSpecificDistribution VALUES('utopia',2010,'winter','night','RL',0.1000000000000000055,'');
 CREATE TABLE LoanRate
 (
     region  TEXT,

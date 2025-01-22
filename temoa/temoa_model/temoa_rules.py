@@ -613,7 +613,7 @@ def Demand_Constraint(M: 'TemoaModel', r, p, s, d, dem):
            \sum_{I, T-T^{a}, V} \textbf{FO}_{r, p, s, d, i, t \not \in T^{a}, v, dem} +
            SEG_{s,d} \cdot  \sum_{I, T^{a}, V} \textbf{FOA}_{r, p, i, t \in T^{a}, v, dem}
            =
-           {DEM}_{r, p, dem} \cdot {DSD}_{r, s, d, dem}
+           {DEM}_{r, p, dem} \cdot {DSD}_{r, p, s, d, dem}
 
     Note that the validity of this constraint relies on the fact that the
     :math:`C^d` set is distinct from both :math:`C^e` and :math:`C^p`. In other
@@ -638,7 +638,7 @@ def Demand_Constraint(M: 'TemoaModel', r, p, s, d, dem):
     DemandConstraintErrorCheck(supply + supply_annual, r, p, s, d, dem)
 
     expr = (
-        supply + supply_annual == M.Demand[r, p, dem] * M.DemandSpecificDistribution[r, s, d, dem]
+        supply + supply_annual == M.Demand[r, p, dem] * M.DemandSpecificDistribution[r, p, s, d, dem]
     )
 
     return expr
@@ -683,8 +683,8 @@ def DemandActivity_Constraint(M: 'TemoaModel', r, p, s, d, t, v, dem, s_0, d_0):
     )
 
     expr = (
-        act_a * M.DemandSpecificDistribution[r, s, d, dem]
-        == act_b * M.DemandSpecificDistribution[r, s_0, d_0, dem]
+        act_a * M.DemandSpecificDistribution[r, p, s, d, dem]
+        == act_b * M.DemandSpecificDistribution[r, p, s_0, d_0, dem]
     )
     return expr
 
