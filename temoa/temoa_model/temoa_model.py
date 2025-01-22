@@ -306,7 +306,7 @@ class TemoaModel(AbstractModel):
         M.TechOutputSplit = Param(M.regions, M.time_optimize, M.tech_all, M.commodity_carrier)
 
         M.RenewablePortfolioStandardConstraint_rpg = Set(
-            within=M.regions * M.time_optimize * M.tech_group_names
+            within=M.RegionalGlobalIndices * M.time_optimize * M.tech_group_names
         )
         M.RenewablePortfolioStandard = Param(M.RenewablePortfolioStandardConstraint_rpg)
 
@@ -466,7 +466,7 @@ class TemoaModel(AbstractModel):
         M.CapacityCredit = Param(
             M.RegionalIndices, M.time_optimize, M.tech_all, M.vintage_all, default=0
         )
-        M.PlanningReserveMargin = Param(M.regions, default=0.2)
+        M.PlanningReserveMargin = Param(M.RegionalGlobalIndices, default=0.2)
         # Storage duration is expressed in hours
         M.StorageDuration = Param(M.regions, M.tech_storage, default=4)
         # Initial storage charge level, expressed as fraction of full energy capacity.

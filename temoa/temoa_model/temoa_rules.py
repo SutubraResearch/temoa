@@ -1851,19 +1851,29 @@ Reformulated reserve margin constraint. This is used for a power system model, a
 returns the constraint for the peak load hour.
 
 """
-    if True:
+    if r == 'global':
+      regions = M.regions
+    elif '+' in r:
+      regions = r.split('+')
+    else:
+      regions = [r]
+
+    if (not M.tech_reserve):  # If reserve set empty skip the constraint
+        return Constraint.Skip
+    if  value(M.PlanningReserveMargin[r]) == 0:
         return Constraint.Skip
 
     cap_avail = sum(
-        value(M.CapacityCredit[r, p, t, v])
-        * M.ProcessLifeFrac[r, p, t, v]
-        * M.V_Capacity[r, p, t, v]
+        value(M.CapacityCredit[reg, p, t, v])
+        * M.ProcessLifeFrac[reg, p, t, v]
+        * M.V_Capacity[reg, p, t, v]
 
+        for reg in regions
         for t in M.tech_reserve
-        if (r, p, t) in M.processVintages.keys()
-        for v in M.processVintages[r, p, t]
+        if (reg, p, t) in M.processVintages.keys()
+        for v in M.processVintages[reg, p, t]
         # Make sure (r,p,t,v) combinations are defined
-        if (r, p, t, v) in M.activeCapacityAvailable_rptv
+        if (reg, p, t, v) in M.activeCapacityAvailable_rptv
     )
 
     # The above code does not consider exchange techs, e.g. electricity
@@ -1874,27 +1884,27 @@ returns the constraint for the peak load hour.
 
     # First, determine the amount of firm capacity each exchange tech
     # contributes.
-    for r1r2 in M.RegionalIndices:
-        if '-' not in r1r2:
-            continue
-        r1, r2 = r1r2.split('-')
-
-        # Only consider the capacity of technologies that import to
-        # the region in question -- i.e. for cases where r2 == r.
-        if r2 != r:
-            continue
-
-        # add the available capacity of the exchange tech.
-        cap_avail += sum(
-            value(M.CapacityCredit[r1r2, p, t, v])
-            * M.ProcessLifeFrac[r1r2, p, t, v]
-            * M.V_Capacity[r1r2, p, t, v]
-            for t in M.tech_reserve
-            if (r1r2, p, t) in M.processVintages.keys()
-            for v in M.processVintages[r1r2, p, t]
-            # Make sure (r,p,t,v) combinations are defined
-            if (r1r2, p, t, v) in M.activeCapacityAvailable_rptv
-        )
+    # for r1r2 in M.RegionalIndices:
+    #     if '-' not in r1r2:
+    #         continue
+    #     r1, r2 = r1r2.split('-')
+    #
+    #     # Only consider the capacity of technologies that import to
+    #     # the region in question -- i.e. for cases where r2 == r.
+    #     if r2 != r:
+    #         continue
+    #
+    #     # add the available capacity of the exchange tech.
+    #     cap_avail += sum(
+    #         value(M.CapacityCredit[r1r2, p, t, v])
+    #         * M.ProcessLifeFrac[r1r2, p, t, v]
+    #         * M.V_Capacity[r1r2, p, t, v]
+    #         for t in M.tech_reserve
+    #         if (r1r2, p, t) in M.processVintages.keys()
+    #         for v in M.processVintages[r1r2, p, t]
+    #         # Make sure (r,p,t,v) combinations are defined
+    #         if (r1r2, p, t, v) in M.activeCapacityAvailable_rptv
+    #     )
 
 
     cap_target = value(M.PeakLoad[r, p]) * (1 + value(M.PlanningReserveMargin[r]))
@@ -3210,28 +3220,31 @@ def RenewablePortfolioStandard_Constraint(M: 'TemoaModel', r, p, g):
     r"""
     Allows users to specify the share of electricity generation in a region
     coming from RPS-eligible technologies."""
+    if r == 'global':
+      regions = M.regions
+    elif '+' in r:
+      regions = r.split('+')
+    else:
+      regions = [r]
 
     inp = sum(
-        M.V_FlowOut[r, p, s, d, S_i, t, v, S_o]
+        M.V_FlowOut[reg, p, s, d, S_i, t, v, S_o]
+        for reg in regions
         for t in M.tech_group_members[g]
-        for (_t, v) in M.processReservePeriods[r, p]
+        for (_t, v) in M.processReservePeriods[reg, p]
         if _t == t
         for s in M.time_season
         for d in M.time_of_day
-        for S_i in M.processInputs[r, p, t, v]
-        for S_o in M.ProcessOutputsByInput[r, p, t, v, S_i]
+        for S_i in M.processInputs[reg, p, t, v]
+        for S_o in M.ProcessOutputsByInput[reg, p, t, v, S_i]
     )
 
-    total_inp = sum(
-        M.V_FlowOut[r, p, s, d, S_i, t, v, S_o]
-        for (t, v) in M.processReservePeriods[r, p]
-        for s in M.time_season
-        for d in M.time_of_day
-        for S_i in M.processInputs[r, p, t, v]
-        for S_o in M.ProcessOutputsByInput[r, p, t, v, S_i]
+    demand = sum(
+        value(M.Demand[reg, p, "demand_elec"])
+        for reg in regions
     )
 
-    expr = inp >= (value(M.RenewablePortfolioStandard[r, p, g]) * total_inp)
+    expr = inp >= (value(M.RenewablePortfolioStandard[r, p, g]) * demand)
     return expr
 
 
