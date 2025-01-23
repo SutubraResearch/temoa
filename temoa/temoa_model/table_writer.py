@@ -117,7 +117,7 @@ def rpetv(fi: FI, e: str) -> tuple:
 class TableWriter:
     def __init__(self, config: TemoaConfig, epsilon=1e-5):
         self.config = config
-        self.epsilon = 1 # epsilon
+        self.epsilon = 10 # epsilon
         self.tech_sectors: dict[str, str] | None = None
         self.flow_register: dict[FI, dict[FlowType, float]] = {}
         self.emission_register: dict[EI, float] | None = None
@@ -321,32 +321,23 @@ class TableWriter:
                 entry = (scenario, fi.r, sector, fi.p, fi.s, fi.d, fi.i, fi.t, fi.v, fi.o, val)
                 flows_by_type[flow_type].append(entry)
 
-        # table_associations = {
-        #     FlowType.OUT: 'OutputFlowOut',
-        #     FlowType.IN: 'OutputFlowIn',
-        #     FlowType.CURTAIL: 'OutputCurtailment',
-        #     FlowType.FLEX: 'OutputCurtailment',
-        # }
         table_associations = {
-            FlowType.OUT: 'OutputFlowOut'
+            FlowType.OUT: 'OutputFlowOut',
+            #FlowType.IN: 'OutputFlowIn',
+            FlowType.CURTAIL: 'OutputCurtailment',
+            FlowType.FLEX: 'OutputCurtailment',
         }
-        # if REPORT_HOURLY_FLOWS:
-        #     for flow_type, table_name in table_associations.items():
-        #
-        #         qry = f'INSERT INTO {table_name} VALUES {_marks(11)}'
-        #         self.con.executemany(qry, flows_by_type[flow_type])
-        #
-        #     self.con.commit()
+
         if REPORT_HOURLY_FLOWS:
             for flow_type, table_name in table_associations.items():
-                # Filtered flows based on specified criteria
-                filtered_flows = [flow for flow in flows_by_type[flow_type] if
-                                  flow[1] in ['AB', 'ON', 'ON-QC', 'QC-ON', 'AB-BC', 'BC-AB', 'SK-AB', 'AB-SK'] and flow[3] in [2035, 2050]]
-
+                if table_name == "OutputFlowOut":
+                    if fi.p in [2035, 2045]:
+                        continue
                 qry = f'INSERT INTO {table_name} VALUES {_marks(11)}'
-                self.con.executemany(qry, filtered_flows)
+                self.con.executemany(qry, flows_by_type[flow_type])
 
             self.con.commit()
+
 
         # Report Annual Output Flows
         # TODO: Optimize this code. It might be very slow.
