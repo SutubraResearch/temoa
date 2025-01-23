@@ -473,14 +473,39 @@ def CreateDemands(M: 'TemoaModel'):
             raise ValueError(msg.format(dem, items, total))
     logger.debug('Finished creating demand distributions')
 
+# def CreatePeakLoad(M: 'TemoaModel'):
+#     # TODO: This needs to be updated. It assumes an 8760 model and the demand name.
+#     for (r, p, c) in M.Demand.sparse_iterkeys():
+#         if c != 'demand_elec':
+#             continue
+#         peak = max(value(M.DemandSpecificDistribution[r, p, s, d, c]) for s in M.time_season for d in M.time_of_day)
+#         peakload = peak * M.Demand[r, p, c]
+#         M.PeakLoad[r, p] = peakload
 def CreatePeakLoad(M: 'TemoaModel'):
     # TODO: This needs to be updated. It assumes an 8760 model and the demand name.
+    print("\n\n---\n\n Printing Peak Loads:")
+    # this will do each region individually
     for (r, p, c) in M.Demand.sparse_iterkeys():
         if c != 'demand_elec':
             continue
         peak = max(value(M.DemandSpecificDistribution[r, p, s, d, c]) for s in M.time_season for d in M.time_of_day)
         peakload = peak * M.Demand[r, p, c]
         M.PeakLoad[r, p] = peakload
+        print(r, p, peakload)
+    # this will do "global"
+    for p in M.time_optimize:
+        c = 'demand_elec'
+        _max = 0
+        for s in M.time_season:
+            for d in M.time_of_day:
+                load = 0
+                for r in M.regions:
+                    load += value(M.DemandSpecificDistribution[r, p, s, d, c]) * M.Demand[r, p, c]
+                if load > _max:
+                    _max = load
+        peakload = _max
+        M.PeakLoad['global', p] = peakload
+        print('global', p, peakload)
 
 
 @deprecated(reason='vintage defaults are no longer available, so this should not be needed')
