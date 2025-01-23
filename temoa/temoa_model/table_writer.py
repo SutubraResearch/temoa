@@ -118,6 +118,7 @@ class TableWriter:
     def __init__(self, config: TemoaConfig, epsilon=1e-5):
         self.config = config
         self.epsilon = 10 # epsilon
+        self.curtail_epsilon = 1 #
         self.tech_sectors: dict[str, str] | None = None
         self.flow_register: dict[FI, dict[FlowType, float]] = {}
         self.emission_register: dict[EI, float] | None = None
@@ -496,7 +497,7 @@ class TableWriter:
         for key in M.V_Curtailment:
             fi = FI(*key)
             val = value(M.V_Curtailment[fi])
-            if abs(val) < self.epsilon:
+            if abs(val) < self.curtail_epsilon:
                 continue
             res[fi][FlowType.CURTAIL] = val
 
