@@ -324,7 +324,7 @@ class TableWriter:
 
         table_associations = {
             FlowType.OUT: 'OutputFlowOut',
-            #FlowType.IN: 'OutputFlowIn',
+            FlowType.IN: 'OutputFlowIn',
             FlowType.CURTAIL: 'OutputCurtailment',
             FlowType.FLEX: 'OutputCurtailment',
         }
@@ -479,18 +479,19 @@ class TableWriter:
             res[fi][FlowType.IN] = flow
             res[fi][FlowType.LOST] = (1 - value(M.Efficiency[ritvo(fi)])) * flow
 
-        # regular flows
-        for key in M.V_FlowOut:
-            fi = FI(*key)
-            flow = value(M.V_FlowOut[fi])
-            if abs(flow) < self.epsilon:
-                continue
-            res[fi][FlowType.OUT] = flow
-
-            if fi.t not in M.tech_storage:  # we can get the flow in by out/eff...
-                flow = value(M.V_FlowOut[fi]) / value(M.Efficiency[ritvo(fi)])
-                res[fi][FlowType.IN] = flow
-                res[fi][FlowType.LOST] = (1 - value(M.Efficiency[ritvo(fi)])) * flow
+        # We don't care about flow ins to non storage techs for ECT modelling.
+        # # regular flows
+        # for key in M.V_FlowOut:
+        #     fi = FI(*key)
+        #     flow = value(M.V_FlowOut[fi])
+        #     if abs(flow) < self.epsilon:
+        #         continue
+        #     res[fi][FlowType.OUT] = flow
+        #
+        #     if fi.t not in M.tech_storage:  # we can get the flow in by out/eff...
+        #         flow = value(M.V_FlowOut[fi]) / value(M.Efficiency[ritvo(fi)])
+        #         res[fi][FlowType.IN] = flow
+        #         res[fi][FlowType.LOST] = (1 - value(M.Efficiency[ritvo(fi)])) * flow
 
 
         # curtailment flows
@@ -521,7 +522,7 @@ class TableWriter:
                     if abs(flow) < self.epsilon:
                         continue
                     res[fi][FlowType.OUT] = flow
-                    res[fi][FlowType.IN] = flow / value(M.Efficiency[ritvo(fi)])
+                    # res[fi][FlowType.IN] = flow / value(M.Efficiency[ritvo(fi)])
                     res[fi][FlowType.LOST] = (1 - value(M.Efficiency[ritvo(fi)])) * res[fi][
                         FlowType.IN
                     ]
