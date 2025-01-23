@@ -1086,33 +1086,33 @@ class HybridLoader:
                 ).fetchall()
             load_element(M.MaxDailyCapacityFactor, raw, self.viable_rt, (0, 3))
 
-        # MinMonthlyCapacityFactor
-        if self.table_exists('MinMonthlyCapacityFactor'):
-            if mi:
-                raw = cur.execute(
-                    'SELECT region, period, month, tech, factor FROM main.MinMonthlyCapacityFactor '
-                    'WHERE period >= ? AND period <= ?',
-                    (mi.base_year, mi.last_demand_year),
-                ).fetchall()
-            else:
-                raw = cur.execute(
-                    'SELECT region, period, month, tech, factor FROM main.MinMonthlyCapacityFactor'
-                ).fetchall()
-            load_element(M.MinMonthlyCapacityFactor, raw, self.viable_rt, (0, 3))
-
-        # MaxMonthlyCapacityFactor
-        if self.table_exists('MaxMonthlyCapacityFactor'):
-            if mi:
-                raw = cur.execute(
-                    'SELECT region, period, month, tech, factor FROM main.MaxMonthlyCapacityFactor '
-                    'WHERE period >= ? AND period <= ?',
-                    (mi.base_year, mi.last_demand_year),
-                ).fetchall()
-            else:
-                raw = cur.execute(
-                    'SELECT region, period, month, tech, factor FROM main.MaxMonthlyCapacityFactor'
-                ).fetchall()
-            load_element(M.MaxMonthlyCapacityFactor, raw, self.viable_rt, (0, 3))
+        # # MinMonthlyCapacityFactor
+        # if self.table_exists('MinMonthlyCapacityFactor'):
+        #     if mi:
+        #         raw = cur.execute(
+        #             'SELECT region, period, month, tech, factor FROM main.MinMonthlyCapacityFactor '
+        #             'WHERE period >= ? AND period <= ?',
+        #             (mi.base_year, mi.last_demand_year),
+        #         ).fetchall()
+        #     else:
+        #         raw = cur.execute(
+        #             'SELECT region, period, month, tech, factor FROM main.MinMonthlyCapacityFactor'
+        #         ).fetchall()
+        #     load_element(M.MinMonthlyCapacityFactor, raw, self.viable_rt, (0, 3))
+        #
+        # # MaxMonthlyCapacityFactor
+        # if self.table_exists('MaxMonthlyCapacityFactor'):
+        #     if mi:
+        #         raw = cur.execute(
+        #             'SELECT region, period, month, tech, factor FROM main.MaxMonthlyCapacityFactor '
+        #             'WHERE period >= ? AND period <= ?',
+        #             (mi.base_year, mi.last_demand_year),
+        #         ).fetchall()
+        #     else:
+        #         raw = cur.execute(
+        #             'SELECT region, period, month, tech, factor FROM main.MaxMonthlyCapacityFactor'
+        #         ).fetchall()
+        #     load_element(M.MaxMonthlyCapacityFactor, raw, self.viable_rt, (0, 3))
 
         # MinAnnualCapacityFactor
         if self.table_exists('MinAnnualCapacityFactor'):
