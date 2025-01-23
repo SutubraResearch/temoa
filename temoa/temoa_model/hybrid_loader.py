@@ -553,9 +553,16 @@ class HybridLoader:
         load_element(M.SegFrac, raw)
 
         # DemandSpecificDistribution
-        raw = cur.execute(
-            'SELECT region, period, season, tod, demand_name, dds FROM main.DemandSpecificDistribution'
-        ).fetchall()
+        if mi:
+            raw = cur.execute(
+                'SELECT region, period, season, tod, demand_name, dds FROM main.DemandSpecificDistribution '
+                'WHERE period >= ? AND period <= ?',
+                (mi.base_year, mi.last_demand_year),
+            ).fetchall()
+        else:
+            raw = cur.execute(
+                'SELECT region, period, season, tod, demand_name, dds FROM main.DemandSpecificDistribution'
+            ).fetchall()
         load_element(M.DemandSpecificDistribution, raw)
 
         # Demand
