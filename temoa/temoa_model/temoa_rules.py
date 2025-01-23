@@ -1851,6 +1851,11 @@ Reformulated reserve margin constraint. This is used for a power system model, a
 returns the constraint for the peak load hour.
 
 """
+    if r == 'global':
+        global_flag = True
+    else:
+        global_flag = False
+
     reg = gather_group_regions(M=M, region=r)
 
     if (not M.tech_reserve):  # If reserve set empty skip the constraint
@@ -1901,8 +1906,10 @@ returns the constraint for the peak load hour.
     #         if (r1r2, p, t, v) in M.activeCapacityAvailable_rptv
     #     )
 
-
-    cap_target = value(M.PeakLoad[r, p]) * (1 + value(M.PlanningReserveMargin[r]))
+    if global_flag:
+        cap_target = value(M.PeakLoad['global', p]) * (1 + value(M.PlanningReserveMargin['global']))
+    else:
+        cap_target = value(M.PeakLoad[r, p]) * (1 + value(M.PlanningReserveMargin[r]))
     return cap_avail >= cap_target
 
 
@@ -3215,6 +3222,10 @@ def RenewablePortfolioStandard_Constraint(M: 'TemoaModel', r, p, g):
     r"""
     Allows users to specify the share of electricity generation in a region
     coming from RPS-eligible technologies."""
+    if r == 'global':
+        global_flag = True
+    else:
+        global_flag = False
     reg = gather_group_regions(M=M, region=r)
 
     inp = sum(
@@ -3233,8 +3244,10 @@ def RenewablePortfolioStandard_Constraint(M: 'TemoaModel', r, p, g):
         value(M.Demand[reg, p, "demand_elec"])
         for r in reg
     )
-
-    expr = inp >= (value(M.RenewablePortfolioStandard[r, p, g]) * demand)
+    if global_flag:
+        expr = inp >= (value(M.RenewablePortfolioStandard['global', p, g]) * demand)
+    else:
+        expr = inp >= (value(M.RenewablePortfolioStandard[r, p, g]) * demand)
     return expr
 
 
