@@ -141,6 +141,7 @@ class TemoaModel(AbstractModel):
         # plus original region indices. If tech_exchange is empty, RegionalIndices =regions.
         M.RegionalIndices = Set(initialize=CreateRegionalIndices)
         M.RegionalGlobalIndices = Set(validate=region_group_check)
+        M.RegionPlusGlobalIndices = Set(initialize=CreateRegionPlusGlobalIndices)
 
         # Define technology-related sets
         M.tech_resource = Set()
@@ -235,7 +236,7 @@ class TemoaModel(AbstractModel):
         M.Demand = Param(M.regions, M.time_optimize, M.commodity_demand)
         M.initialize_Demands = BuildAction(rule=CreateDemands)
 
-        M.PeakLoad = Param(M.RegionalGlobalIndices, M.time_optimize, mutable=True)
+        M.PeakLoad = Param(M.RegionPlusGlobalIndices, M.time_optimize, mutable=True)
         M.initialize_PeakLoad = BuildAction(rule=CreatePeakLoad)
         # TODO:  Revive this with the DB schema and refactor the associated constraint
         M.ResourceConstraint_rpr = Set(within=M.regions * M.time_optimize * M.commodity_physical)

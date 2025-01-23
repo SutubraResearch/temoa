@@ -490,8 +490,9 @@ def CreatePeakLoad(M: 'TemoaModel'):
             continue
         peak = max(value(M.DemandSpecificDistribution[r, p, s, d, c]) for s in M.time_season for d in M.time_of_day)
         peakload = peak * M.Demand[r, p, c]
-        M.PeakLoad[r, p] = peakload
         print(r, p, peakload)
+        M.PeakLoad[r, p] = peakload
+
     # this will do "global"
     for p in M.time_optimize:
         c = 'demand_elec'
@@ -579,7 +580,12 @@ def CreateRegionalIndices(M: 'TemoaModel'):
                 regional_indices.add(r_i + '-' + r_j)
     # dev note:  Sorting these passed them to pyomo in an ordered container and prevents warnings
     return sorted(regional_indices)
-
+def CreateRegionPlusGlobalIndices(M: 'TemoaModel'):
+    regional_indices = set()
+    for r in M.regions:
+        regional_indices.add(r)
+    regional_indices.add('global')
+    return regional_indices
 
 # ---------------------------------------------------------------
 # The functions below perform the sparse matrix indexing, allowing Pyomo to only
