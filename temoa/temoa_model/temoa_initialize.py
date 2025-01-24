@@ -1344,7 +1344,7 @@ def RampConstraintPeriodIndices(M: 'TemoaModel'):
 def ReserveMarginIndices(M: 'TemoaModel'):
     indices = set(
         (r, p)
-        for r in M.RegionalGlobalIndices
+        for r in M.RegionPlusGlobalIndices
         for p in M.time_optimize)
     return indices
 
