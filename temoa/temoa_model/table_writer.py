@@ -853,8 +853,16 @@ class TableWriter:
             if iteration is not None
             else self.config.scenario
         )  # collect the values
+
+        # Define the constraints to keep
+        constraints_to_keep = ["MaxCapacityConstraint", "DemandConstraint"]
+
         constraint_data = results['Solution'].Constraint.items()
-        dual_data = [(scenario_name, t[0], t[1]['Dual']) for t in constraint_data]
+        dual_data = [
+            (scenario_name, t[0], t[1]['Dual'])
+            for t in constraint_data
+            if any(keyword in t[0] for keyword in constraints_to_keep)
+        ]
         qry = 'INSERT INTO OutputDualVariable VALUES (?, ?, ?)'
         self.con.executemany(qry, dual_data)
         self.con.commit()
