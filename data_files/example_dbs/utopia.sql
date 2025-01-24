@@ -27,6 +27,25 @@ CREATE TABLE OutputDualVariable
     dual            REAL,
     PRIMARY KEY (constraint_name, scenario)
 );
+CREATE TABLE IF NOT EXISTS OutputFlowOutAnnual
+(
+    scenario    TEXT,
+    region      TEXT,
+    sector      TEXT
+        REFERENCES SectorLabel (sector),
+    period      INTEGER
+        REFERENCES TimePeriod (period),
+    input_comm  TEXT
+        REFERENCES Commodity (name),
+    tech        TEXT
+        REFERENCES Technology (tech),
+    vintage     INTEGER
+        REFERENCES TimePeriod (period),
+    output_comm TEXT
+        REFERENCES Commodity (name),
+    flow        REAL,
+    PRIMARY KEY (region, scenario, period, input_comm, tech, vintage, output_comm)
+);
 CREATE TABLE OutputObjective
 (
     scenario          TEXT,
@@ -926,8 +945,7 @@ CREATE TABLE OutputFlowOut
 CREATE TABLE PlanningReserveMargin
 (
     region TEXT
-        PRIMARY KEY
-        REFERENCES Region (region),
+        PRIMARY KEY,
     margin REAL
 );
 CREATE TABLE RampDown
@@ -1291,8 +1309,7 @@ CREATE TABLE MaxActivityGroup
 );
 CREATE TABLE RPSRequirement
 (
-    region      TEXT    NOT NULL
-        REFERENCES Region (region),
+    region      TEXT,
     period      INTEGER NOT NULL
         REFERENCES TimePeriod (period),
     tech_group  TEXT    NOT NULL
