@@ -467,7 +467,7 @@ class TemoaModel(AbstractModel):
         M.CapacityCredit = Param(
             M.RegionalIndices, M.time_optimize, M.tech_all, M.vintage_all, default=0
         )
-        M.PlanningReserveMargin = Param(M.RegionPlusGlobalIndices, default=0.2)
+        M.PlanningReserveMargin = Param(M.RegionPlusGlobalIndices, default=None)
         # Storage duration is expressed in hours
         M.StorageDuration = Param(M.regions, M.tech_storage, default=4)
         # Initial storage charge level, expressed as fraction of full energy capacity.

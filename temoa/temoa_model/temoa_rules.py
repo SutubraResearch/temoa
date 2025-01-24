@@ -1860,7 +1860,7 @@ returns the constraint for the peak load hour.
 
     if (not M.tech_reserve):  # If reserve set empty skip the constraint
         return Constraint.Skip
-    if  value(M.PlanningReserveMargin[r]) == 0:
+    if  value(M.PlanningReserveMargin[r]) == None:
         return Constraint.Skip
 
     cap_avail = sum(
