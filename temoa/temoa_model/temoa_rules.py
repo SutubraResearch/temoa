@@ -3241,7 +3241,7 @@ def RenewablePortfolioStandard_Constraint(M: 'TemoaModel', r, p, g):
     )
 
     demand = sum(
-        value(M.Demand[reg, p, "demand_elec"])
+        value(M.Demand[r, p, "demand_elec"])
         for r in reg
     )
     if global_flag:
