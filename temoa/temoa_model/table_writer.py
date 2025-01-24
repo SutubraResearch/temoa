@@ -158,6 +158,7 @@ class TableWriter:
         self.flow_register = self.calculate_flows(M)
         self.check_flow_balance(M)
         self.write_flow_tables(iteration=iteration)
+        self.write_storage_level(M, iteration=iteration)
         if results_with_duals:  # write the duals
             self.write_dual_variables(results_with_duals, iteration=iteration)
         # catch-all
@@ -358,7 +359,29 @@ class TableWriter:
             self.con.executemany(qry, annual_output_flows)
 
 
+    def write_storage_level(self, M: TemoaModel, iteration: int | None = None) -> None:
+        """Write the capacity tables to the DB"""
+        if not self.tech_sectors:
+            raise RuntimeError('tech sectors not available... code error')
+        scenario = self.config.scenario
+        if iteration is not None:
+            scenario = scenario + f'-{iteration}'
+        data = []
 
+        for r, p, s, d, t, v in M.V_StorageLevel:
+            val = value(M.V_StorageLevel[r, p, s, d, t, v])
+            sec = self.tech_sectors.get(t)
+            # only print storage level if capacity is above threshold
+            cap = value(M.V_Capacity[r, p, t, v])
+            if abs(cap) < self.epsilon:
+                continue
+            if abs(val) < 0.01:
+                val = 0
+            level = (scenario, r, sec, p, s, d, t, v, val)
+            data.append(level)
+        qry = 'INSERT INTO OutputStorageLevel VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        self.con.executemany(qry, data)
+        self.con.commit()
 
     def write_summary_flow(self, M: TemoaModel, iteration: int | None = None):
         """
