@@ -2901,7 +2901,7 @@ def MaxHourlyIBRShare_Constraint(M: 'TemoaModel', r, p, g, dem, s, d):
             for S_o in M.ProcessOutputsByInput[r_i, p, S_t, S_v, S_i]
             if (r_i, p, s, d, S_i, S_t, S_v, S_o) in M.V_FlowOut
         )
-        demand += value(M.Demand[r_i, p, dem]) * value(M.DemandSpecificDistribution[r_i, s, d, dem])
+        demand += value(M.Demand[r_i, p, dem]) * value(M.DemandSpecificDistribution[r_i, p, s, d, dem])
 
 
     share = value(M.MaxHourlyIBRShare[r, p, g, dem])
