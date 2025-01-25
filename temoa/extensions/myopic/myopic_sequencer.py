@@ -67,7 +67,7 @@ class MyopicSequencer:
         'OutputFlowIn',
         'OutputFlowOut',
         'OutputFlowOutAnnual',
-        'OutputStorageLevel'
+        'OutputStorageLevel',
         'OutputNetCapacity',
         'OutputObjective',
         'OutputRetiredCapacity',
