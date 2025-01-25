@@ -274,7 +274,10 @@ class MyopicSequencer:
             if not self.config.silent:
                 self.progress_mapper.report(idx, 'report')
             # write results by appending.  We have already cleared necessary items
-            self.table_writer.write_results(M=model, append=True)
+            if self.config.save_duals:
+                self.table_writer.write_results(M=model, results_with_duals=results, append=True)
+            else:
+                self.table_writer.write_results(M=model, append=True)
 
             # prep next loop
             last_base_year = idx.base_year  # update
