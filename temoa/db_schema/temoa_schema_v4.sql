@@ -27,6 +27,14 @@ REPLACE INTO metadata_real
 VALUES ('global_discount_rate', 0.05, 'Discount Rate for future costs');
 REPLACE INTO metadata_real
 VALUES ('default_loan_rate', 0.05, 'Default Loan Rate if not specified in LoanRate table');
+REPLACE INTO metadata_real
+VALUES ('output_threshold_capacity', 0.001, 'Min abs(MW) to write for capacity outputs');
+REPLACE INTO metadata_real
+VALUES ('output_threshold_activity', 0.001, 'Min abs(flow units) to write for activity outputs');
+REPLACE INTO metadata_real
+VALUES ('output_threshold_emission', 0.001, 'Min abs(emissions units) to write for emission outputs');
+REPLACE INTO metadata_real
+VALUES ('output_threshold_cost', 0.01, 'Min abs(cost units) to write for cost outputs');
 
 CREATE TABLE IF NOT EXISTS output_dual_variable
 (

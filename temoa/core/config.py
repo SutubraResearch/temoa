@@ -63,6 +63,10 @@ class TemoaConfig:
         check_units: bool = False,
         plot_commodity_network: bool = False,
         graphviz_output: bool = False,
+        output_threshold_capacity: float | None = None,
+        output_threshold_activity: float | None = None,
+        output_threshold_emission: float | None = None,
+        output_threshold_cost: float | None = None,
     ):
         if '-' in scenario:
             raise ValueError(
@@ -146,6 +150,10 @@ class TemoaConfig:
         self.plot_commodity_network = plot_commodity_network and self.source_trace
         self.graphviz_output = graphviz_output
         self.stochastic_config = stochastic_config
+        self.output_threshold_capacity = output_threshold_capacity
+        self.output_threshold_activity = output_threshold_activity
+        self.output_threshold_emission = output_threshold_emission
+        self.output_threshold_cost = output_threshold_cost
 
         # warn if output db != input db
         if self.input_database.suffix == self.output_database.suffix:  # they are both .db/.sqlite
