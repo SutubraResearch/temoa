@@ -102,9 +102,22 @@ def demand_constraint_error_check(supply: Any, r: Region, p: Period, dem: Commod
 def demand_activity_constraint_indices(
     model: TemoaModel,
 ) -> set[tuple[Region, Period, Season, TimeOfDay, Technology, Vintage, Commodity]]:
+    # Only create constraints when >1 non-annual tech serves the demand (otherwise redundant)
+    demand_multi_tech = {
+        (r, p, dem)
+        for r, p, dem in model.demand_constraint_rpc
+        if len(
+            {
+                (t, v)
+                for t, v in model.commodity_up_stream_process[r, p, dem]
+                if t not in model.tech_annual
+            }
+        )
+        > 1
+    }
     indices = {
         (r, p, s, d, t, v, dem)
-        for r, p, dem in model.demand_constraint_rpc
+        for r, p, dem in demand_multi_tech
         for t, v in model.commodity_up_stream_process[r, p, dem]
         if t not in model.tech_annual
         for s in model.time_season[p]
