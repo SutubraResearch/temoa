@@ -1,8 +1,7 @@
 scenario = "national_52week_myopic"
 scenario_mode = "myopic"
-# ── Paths: adjust these on the server ──
-input_database = "data_files/national_52week_v4.sqlite"
-output_database = "data_files/national_52week_v4.sqlite"
+input_database = "/trace/group/adams/cwade2/temoa2026/national_52week_v4.sqlite"
+output_database = "/trace/group/adams/cwade2/temoa2026/national_52week_v4.sqlite"
 solver_name = "gurobi"
 save_lp_file = false
 save_duals = false
