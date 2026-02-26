@@ -87,7 +87,8 @@ path = "temoa/__about__.py"
 line-length = 100
 indent-width = 4
 exclude = ["stubs",
-    "temoa/extensions/"
+    "temoa/extensions/",
+    "data_files/mip_migration_workspace/",
 ]
 
 [tool.ruff.format]
