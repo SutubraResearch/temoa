@@ -232,21 +232,29 @@ def clean_commodities(conn: sqlite3.Connection) -> None:
 # =============================================================================
 
 
-def subset_time(conn: sqlite3.Connection, weeks: int) -> int:
-    """Subset to first N weeks, rescale SegFrac/DSD/Demand, auto-set C2A.
+def subset_time(conn: sqlite3.Connection, weeks: int, week_start: int = 1) -> int:
+    """Subset to N weeks starting at week_start (1-based), rescale SegFrac/DSD/Demand, auto-set C2A.
 
     Returns the number of kept seasons (= weeks, since each season = 1 week).
     """
-    print(f'\n--- Step 6: Subset time ({weeks} weeks) ---')
+    start_idx = week_start - 1  # convert to 0-based
+    print(f'\n--- Step 6: Subset time ({weeks} weeks starting at week {week_start}) ---')
 
     seasons = [r[0] for r in conn.execute('SELECT t_season FROM time_season').fetchall()]
     sorted_seasons = sorted(seasons, key=parse_sort_key)
 
-    if len(sorted_seasons) <= weeks:
+    if start_idx + weeks > len(sorted_seasons):
+        print(
+            f'  ERROR: week_start={week_start} + weeks={weeks} = {week_start + weeks - 1} '
+            f'exceeds available seasons ({len(sorted_seasons)})'
+        )
+        sys.exit(1)
+
+    if len(sorted_seasons) <= weeks and start_idx == 0:
         print(f'  Source has {len(sorted_seasons)} seasons, keeping all (no subsetting needed)')
         n_kept = len(sorted_seasons)
     else:
-        kept = sorted_seasons[:weeks]
+        kept = sorted_seasons[start_idx : start_idx + weeks]
         to_remove = [s for s in sorted_seasons if s not in kept]
         print(f'  Keeping {len(kept)} of {len(sorted_seasons)} seasons')
 
@@ -404,7 +412,7 @@ def migrate_to_v4(
         str(working_db),
         '--schema',
         str(schema_path),
-        '--target',
+        '--out',
         str(output_v4),
         '--days-per-period',
         str(days),
@@ -569,6 +577,12 @@ def main() -> None:
         help='Number of weeks to keep (default: 52 = full year)',
     )
     parser.add_argument(
+        '--week-start',
+        type=int,
+        default=1,
+        help='First week to keep, 1-based (default: 1). E.g. --week-start 30 --weeks 6 keeps weeks 30-35.',
+    )
+    parser.add_argument(
         '--output-v4',
         required=True,
         help='Path for v4 output SQLite DB',
@@ -599,7 +613,7 @@ def main() -> None:
     print('=== Build v4 DB Pipeline ===')
     print(f'Source: {source}')
     print(f'Regions: {args.regions or "ALL"}')
-    print(f'Weeks: {args.weeks}')
+    print(f'Weeks: {args.weeks} (starting at week {args.week_start})')
 
     with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as tmp:
         working_db = Path(tmp.name)
@@ -630,7 +644,7 @@ def main() -> None:
     # Step 6: Subset time (reopens connection internally)
     conn = sqlite3.connect(working_db)
     conn.execute('PRAGMA foreign_keys = OFF')
-    n_kept = subset_time(conn, args.weeks)
+    n_kept = subset_time(conn, args.weeks, args.week_start)
     conn.close()
 
     # Step 7: Optionally save v3.1 output

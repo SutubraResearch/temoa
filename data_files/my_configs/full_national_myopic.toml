@@ -1,0 +1,19 @@
+scenario = "national_52week_myopic"
+scenario_mode = "myopic"
+input_database = "/trace/group/adams/cwade2/temoa2026/national_52week_v4.sqlite"
+output_database = "/trace/group/adams/cwade2/temoa2026/national_52week_v4.sqlite"
+solver_name = "gurobi"
+save_lp_file = true
+save_duals = false
+save_excel = false
+neos = false
+time_sequencing = "seasonal_timeslices"
+reserve_margin = "static"
+output_threshold_capacity = 10.0
+output_threshold_activity = 10.0
+output_threshold_emission = 10.0
+output_threshold_cost = 10.0
+
+[myopic]
+view_depth = 1
+step_size = 1

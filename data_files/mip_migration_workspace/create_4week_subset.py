@@ -28,6 +28,7 @@ Example:
 
 from __future__ import annotations
 
+import argparse
 import shutil
 import sqlite3
 import sys
@@ -44,12 +45,29 @@ def parse_sort_key(label: str) -> tuple[int, str]:
 
 
 def main() -> None:
-    if len(sys.argv) < 3:
-        print(__doc__)
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description='Create a time-subset from a full 52-week legacy Temoa DB.',
+        epilog=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument('source', help='Path to source 52-week SQLite DB')
+    parser.add_argument('output', help='Path for output subset SQLite DB')
+    parser.add_argument(
+        '--weeks', type=int, default=4, help='Number of weeks to keep (default: 4)'
+    )
+    parser.add_argument(
+        '--week-start',
+        type=int,
+        default=1,
+        help='First week to keep, 1-based (default: 1). E.g. --week-start 30 --weeks 6 keeps weeks 30-35.',
+    )
+    args = parser.parse_args()
 
-    source = Path(sys.argv[1])
-    output = Path(sys.argv[2])
+    source = Path(args.source)
+    output = Path(args.output)
+    weeks = args.weeks
+    week_start = args.week_start
+    start_idx = week_start - 1  # convert to 0-based
 
     if not source.exists():
         print(f'Error: source DB not found: {source}')
@@ -65,11 +83,18 @@ def main() -> None:
     seasons = [r[0] for r in conn.execute('SELECT t_season FROM time_season').fetchall()]
     sorted_seasons = sorted(seasons, key=parse_sort_key)
 
-    if len(sorted_seasons) < 4:
+    if start_idx + weeks > len(sorted_seasons):
+        print(
+            f'Error: week_start={week_start} + weeks={weeks} = {week_start + weeks - 1} '
+            f'exceeds available seasons ({len(sorted_seasons)})'
+        )
+        sys.exit(1)
+
+    if len(sorted_seasons) <= weeks and start_idx == 0:
         print(f'Warning: only {len(sorted_seasons)} seasons in source, keeping all')
         kept = sorted_seasons
     else:
-        kept = sorted_seasons[:4]
+        kept = sorted_seasons[start_idx : start_idx + weeks]
 
     to_remove = [s for s in sorted_seasons if s not in kept]
     print(f'Keeping seasons: {kept}')
@@ -78,9 +103,9 @@ def main() -> None:
     )
 
     if not to_remove:
-        print('Nothing to remove (source already has ≤4 seasons).')
+        print(f'Nothing to remove (source already has ≤{weeks} seasons).')
         conn.close()
-        print(f'\n✓ Created 4-week subset: {output}')
+        print(f'\n✓ Created {weeks}-week subset: {output}')
         return
 
     placeholders = ','.join('?' * len(to_remove))

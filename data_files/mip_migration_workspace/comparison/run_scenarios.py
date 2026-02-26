@@ -40,6 +40,10 @@ BASE_V4_DB = DATA_DIR / 'jan_TRE_TREW_4week_v4_stripped.sqlite'
 # workspace copy which may have stale C2A=8760 and full-year demands.
 BASE_V3_DB = REPO_ROOT / 'data_files' / 'jan_TRE_TREW_4week.sqlite'
 
+# Summer 6-week base DBs (seasons p30-p35, late July–early Sept)
+SUMMER_V4_DB = REPO_ROOT / 'data_files' / 'summer_TRE_TREW_6week_v4_stripped.sqlite'
+SUMMER_V3_DB = REPO_ROOT / 'data_files' / 'summer_TRE_TREW_6week.sqlite'
+
 # ---------------------------------------------------------------------------
 # Tech classification
 # ---------------------------------------------------------------------------
@@ -578,6 +582,59 @@ def prepare_s5_windcap(v4_db, v3_db):
     conn.close()
 
 
+def prepare_s7_summer(v4_db, v3_db):
+    """S7: Summer 6-week, 2x demand, 1% discount, 2x gas prices.
+
+    Tests summer peak conditions with significant load growth, cheap capital,
+    and expensive gas. Uses summer base DBs (p30-p35) instead of January baseline.
+    """
+    MULT = 2
+    print(f'  S7: 2x demand + 1% discount + 2x gas prices (summer 6-week)...')
+
+    # --- v4 ---
+    conn = sqlite3.connect(v4_db)
+    conn.execute(f'UPDATE demand SET demand = demand * {MULT}')
+    conn.execute('UPDATE loan_rate SET rate = 0.01')
+    # 2x gas fuel prices (variable cost on import techs)
+    conn.execute(
+        f'UPDATE cost_variable SET cost = cost * {MULT} '
+        "WHERE tech LIKE 'import_west_south_central_reference_naturalgas%'"
+    )
+    # Scale passthrough tech capacities to avoid artificial bottlenecks
+    conn.execute(
+        f'UPDATE existing_capacity SET capacity = capacity * {MULT} '
+        f"WHERE tech IN ('elec_distribution', "
+        f"'import_west_south_central_reference_distillate', "
+        f"'import_west_south_central_reference_coal', "
+        f"'import_west_south_central_reference_naturalgas', "
+        f"'import_west_south_central_reference_naturalgas_ccs95', "
+        f"'import_hydrogen', 'import_waste_biomass')"
+    )
+    conn.commit()
+    conn.close()
+
+    # --- v3 ---
+    conn = sqlite3.connect(v3_db)
+    conn.execute(f'UPDATE Demand SET demand = demand * {MULT}')
+    conn.execute('UPDATE DiscountRate SET tech_rate = 0.01')
+    # 2x gas fuel prices
+    conn.execute(
+        f'UPDATE CostVariable SET cost_variable = cost_variable * {MULT} '
+        "WHERE tech LIKE '%import_west_south_central_reference_naturalgas%'"
+    )
+    conn.execute(
+        f'UPDATE ExistingCapacity SET exist_cap = exist_cap * {MULT} '
+        f"WHERE tech IN ('elec_distribution', "
+        f"'import_west_south_central_reference_distillate', "
+        f"'import_west_south_central_reference_coal', "
+        f"'import_west_south_central_reference_naturalgas', "
+        f"'import_west_south_central_reference_naturalgas_ccs95', "
+        f"'import_hydrogen', 'import_waste_biomass')"
+    )
+    conn.commit()
+    conn.close()
+
+
 # ---------------------------------------------------------------------------
 # Scenario registry
 # ---------------------------------------------------------------------------
@@ -605,6 +662,12 @@ SCENARIOS = {
     's6_greenfield': {
         'name': 'Demand 10x (Greenfield)',
         'prepare': prepare_s6_greenfield,
+    },
+    's7_summer': {
+        'name': 'Summer 6-week, 2x Demand, 1% Discount',
+        'prepare': prepare_s7_summer,
+        'base_v4': SUMMER_V4_DB,
+        'base_v3': SUMMER_V3_DB,
     },
 }
 
@@ -656,31 +719,21 @@ def generate_v3_config(scenario_key, db_path):
 # ---------------------------------------------------------------------------
 
 
-def cmd_prepare(args):
-    """Prepare all scenario DBs and configs."""
-    print('=' * 70)
-    print('Scenario Comparison: Preparing DBs and configs')
-    print('=' * 70)
+def validate_base_dbs(base_v4, base_v3, label=''):
+    """Validate C2A and demand match between v4 and v3 base DBs."""
+    prefix = f'  [{label}] ' if label else '  '
 
-    # Verify baselines exist and are consistent
-    for label, path in [('v4 baseline', BASE_V4_DB), ('v3 baseline', BASE_V3_DB)]:
-        if not path.exists():
-            print(f'ERROR: {label} not found: {path}')
-            sys.exit(1)
-        print(f'  {label}: {path} ({path.stat().st_size / 1e6:.1f} MB)')
+    v4_conn = sqlite3.connect(str(base_v4))
+    v3_conn = sqlite3.connect(str(base_v3))
 
-    # CRITICAL: Validate C2A and demand match between v4 and v3 base DBs.
-    # The v3 base MUST have C2A=672 for a 4-week subset (not 8760).
-    # A mismatch here silently produces garbage results.
-    v4_conn = sqlite3.connect(str(BASE_V4_DB))
-    v3_conn = sqlite3.connect(str(BASE_V3_DB))
     v4_c2a = v4_conn.execute('SELECT c2a FROM capacity_to_activity LIMIT 1').fetchone()[0]
     v3_c2a = v3_conn.execute('SELECT c2a FROM CapacityToActivity LIMIT 1').fetchone()[0]
     if abs(v4_c2a - v3_c2a) > 0.1:
-        print(f'FATAL: C2A mismatch! v4={v4_c2a}, v3={v3_c2a}')
-        print('The v3 base DB has wrong C2A. Use the corrected DB with C2A=672.')
+        print(f'{prefix}FATAL: C2A mismatch! v4={v4_c2a}, v3={v3_c2a}')
+        v4_conn.close()
+        v3_conn.close()
         sys.exit(1)
-    print(f'  C2A check: v4={v4_c2a}, v3={v3_c2a} ✓')
+    print(f'{prefix}C2A check: v4={v4_c2a}, v3={v3_c2a} ✓')
 
     v4_demand = v4_conn.execute(
         'SELECT SUM(demand) FROM demand WHERE period = (SELECT MIN(period) FROM demand)'
@@ -691,13 +744,23 @@ def cmd_prepare(args):
     demand_ratio = v4_demand / v3_demand if v3_demand else float('inf')
     if abs(demand_ratio - 1.0) > 0.01:
         print(
-            f'FATAL: Demand mismatch! v4={v4_demand:.0f}, v3={v3_demand:.0f} (ratio={demand_ratio:.3f})'
+            f'{prefix}FATAL: Demand mismatch! v4={v4_demand:.0f}, v3={v3_demand:.0f} '
+            f'(ratio={demand_ratio:.3f})'
         )
-        print('The v3 base DB has wrong demand values.')
+        v4_conn.close()
+        v3_conn.close()
         sys.exit(1)
-    print(f'  Demand check: v4={v4_demand:.0f}, v3={v3_demand:.0f} (ratio={demand_ratio:.4f}) ✓')
+    print(f'{prefix}Demand check: v4={v4_demand:.0f}, v3={v3_demand:.0f} (ratio={demand_ratio:.4f}) ✓')
+
     v4_conn.close()
     v3_conn.close()
+
+
+def cmd_prepare(args):
+    """Prepare all scenario DBs and configs."""
+    print('=' * 70)
+    print('Scenario Comparison: Preparing DBs and configs')
+    print('=' * 70)
 
     # Create dirs
     SCENARIO_DB_DIR.mkdir(parents=True, exist_ok=True)
@@ -712,7 +775,28 @@ def cmd_prepare(args):
     else:
         selected = SCENARIOS
 
+    # Collect unique base DB pairs to validate
+    validated_pairs = set()
+
     for key, scenario in selected.items():
+        base_v4 = scenario.get('base_v4', BASE_V4_DB)
+        base_v3 = scenario.get('base_v3', BASE_V3_DB)
+
+        # Verify baselines exist
+        for label, path in [('v4 baseline', base_v4), ('v3 baseline', base_v3)]:
+            if not path.exists():
+                print(f'ERROR: {label} not found for {key}: {path}')
+                sys.exit(1)
+
+        # Validate each unique pair once
+        pair_key = (str(base_v4), str(base_v3))
+        if pair_key not in validated_pairs:
+            print(f'\n  Validating base DBs for {key}:')
+            print(f'    v4: {base_v4} ({base_v4.stat().st_size / 1e6:.1f} MB)')
+            print(f'    v3: {base_v3} ({base_v3.stat().st_size / 1e6:.1f} MB)')
+            validate_base_dbs(base_v4, base_v3, label=key)
+            validated_pairs.add(pair_key)
+
         print(f'\n--- {key}: {scenario["name"]} ---')
 
         # Copy baseline DBs
@@ -720,8 +804,8 @@ def cmd_prepare(args):
         v3_db = SCENARIO_DB_DIR / f'{key}_v3.sqlite'
 
         print('  Copying baselines...')
-        shutil.copy2(BASE_V4_DB, v4_db)
-        shutil.copy2(BASE_V3_DB, v3_db)
+        shutil.copy2(base_v4, v4_db)
+        shutil.copy2(base_v3, v3_db)
 
         # Clear output tables
         clear_output_tables(v4_db, 'v4')
@@ -1378,6 +1462,61 @@ def run_sniff_tests(scenario_key, v4_results, v3_results):
             check(
                 total_new > 50_000,
                 f'{label}: Total new capacity = {total_new:,.0f} MW (expect massive builds)',
+            )
+
+    elif scenario_key == 's7_summer':
+        # Summer 6-week with 2x demand + 1% discount.
+        # Total gen should be well above January baseline (more weeks + 2x demand).
+        # 6 weeks / 4 weeks = 1.5x time, 2x demand = 3x total vs January baseline.
+        for version, results, label in [('v4', v4_results, 'v4'), ('v3', v3_results, 'v3')]:
+            if results is None:
+                continue
+            for period in [2027, 2030]:
+                total = results.get('total_gen', {}).get(period, 0)
+                baseline = BASELINE['total_gen'].get(period, 1)
+                ratio = total / baseline if baseline else 0
+                # Expect ~2.5-4x of January baseline (6/4 weeks * 2x demand * summer CF diffs)
+                check(
+                    ratio > 2.0,
+                    f'{label} {period}: Total gen = {total / 1e6:.1f}M MWh '
+                    f'({ratio:.1f}x Jan baseline, expect >2x)',
+                )
+
+        # Solar share should be higher than January baseline (~8%)
+        for version, results, label in [('v4', v4_results, 'v4'), ('v3', v3_results, 'v3')]:
+            if results is None:
+                continue
+            for period in [2027, 2030]:
+                solar_share = (
+                    results.get('gen_by_cat', {})
+                    .get(period, {})
+                    .get('solar', {})
+                    .get('share', 0.0)
+                )
+                check(
+                    solar_share > 8.0,
+                    f'{label} {period}: Solar share = {solar_share:.1f}% '
+                    f'(summer should be >= January ~8%)',
+                )
+
+        # Model should solve with generation output (no infeasibility)
+        for version, results, label in [('v4', v4_results, 'v4'), ('v3', v3_results, 'v3')]:
+            if results is None:
+                continue
+            has_gen = bool(results.get('total_gen', {}))
+            check(has_gen, f'{label}: Model solved with generation output')
+
+        # Should have significant new capacity from 2x demand + cheap capital
+        for version, results, label in [('v4', v4_results, 'v4'), ('v3', v3_results, 'v3')]:
+            if results is None:
+                continue
+            total_new = 0.0
+            for period, builds in results.get('new_cap', {}).items():
+                for b in builds:
+                    total_new += b['capacity_mw']
+            check(
+                total_new > 1000,
+                f'{label}: Total new capacity = {total_new:,.0f} MW (expect significant builds)',
             )
 
     return passes, fails, msgs
