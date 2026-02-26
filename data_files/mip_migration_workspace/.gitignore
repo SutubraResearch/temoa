@@ -1,0 +1,80 @@
+# Ignore everything by default, then whitelist specific files
+*
+
+# Allow subdirectories to be traversed
+!*/
+
+# ---- Top-level tracked files ----
+!.gitignore
+!__init__.py
+!build_v4_db.py
+!create_4week_subset.py
+!create_archive.py
+!migrate_to_v4.py
+!strip_region_prefixes.py
+!update_config.py
+!ERCOT_4WEEK_COMPARISON_RESULTS.md
+
+# ---- comparison/ tracked files ----
+!comparison/README.md
+!comparison/run_scenarios.py
+!comparison/run_mipdev.py
+!comparison/compare_results.py
+!comparison/create_4week_subset_v4.py
+!comparison/diagnostic_comparison.py
+!comparison/extract_mipdev_metrics.py
+!comparison/run_v4_comparison.py
+!comparison/validate_4week_db.py
+
+# ---- comparison/scenario_metrics/ (lightweight JSON results) ----
+!comparison/scenario_metrics/
+!comparison/scenario_metrics/*.json
+
+# ---- Ignore everything else explicitly ----
+# Databases
+*.sqlite
+*.sqlite-journal
+
+# Solver artifacts
+*.lp
+*.sol
+*.dat
+*.ilp
+*.mps
+
+# Large/generated directories
+runs/
+data_files/
+data_processing/
+analysis/
+docs/
+tools/
+temoa_model/
+__pycache__/
+comparison/scenario_dbs/
+comparison/scenario_configs/
+comparison/mipdev_output/
+comparison/v4_output/
+comparison/diagnostics/
+
+# OS files
+.DS_Store
+
+# Misc files we don't need tracked
+*.yml
+*.txt
+*.sh
+*.sql
+*.toml
+*.ipynb
+*.log
+*.pdf
+*.svg
+*.png
+*.rst
+*.tex
+*.bib
+*.css
+*.js
+*.html
+*.conf

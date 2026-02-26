@@ -1,0 +1,10 @@
+{
+  "build_time_s": 6.579,
+  "solve_time_s": 18.817,
+  "results_time_s": 2.105,
+  "wall_time_s": 31.284,
+  "variables": 537415,
+  "constraints": 469682,
+  "status": "optimal",
+  "objective": 56625636966.2442
+}
