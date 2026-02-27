@@ -219,7 +219,9 @@ def solve_instance(
         optimizer.options['Crossover'] = 0  # non basic solution, ie no crossover
         optimizer.options['BarConvTol'] = 1.0e-3
         optimizer.options['FeasibilityTol'] = 1.0e-4
-        # optimizer.options["BarOrder"] = 0 # if solve times seem unusually long, try 0 or 1
+        optimizer.options['BarOrder'] = (
+            0  # AMD ordering; avoids slow Nested Dissection on dense columns
+        )
 
     elif solver_name == 'appsi_highs':
         pass
