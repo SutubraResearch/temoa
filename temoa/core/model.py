@@ -859,16 +859,14 @@ class TemoaModel(AbstractModel):
         # Declare core model constraints that ensure proper system functioning
         # In driving order, starting with the need to meet end-use demands
 
+        # Demand is enforced at the timeslice level (matching mip-dev formulation).
+        # This avoids creating v_flow_out_annual variables for demand techs, which
+        # caused dense columns and catastrophic barrier factorization slowdown.
+        self.demand_constraint_rpsd_dem = Set(
+            dimen=5, initialize=commodities.demand_constraint_indices
+        )
         self.demand_constraint = Constraint(
-            self.demand_constraint_rpc, rule=commodities.demand_constraint
-        )
-
-        # devnote: testing a workaround
-        self.demand_activity_constraint_rpsdtv_dem = Set(
-            dimen=7, initialize=commodities.demand_activity_constraint_indices
-        )
-        self.demand_activity_constraint = Constraint(
-            self.demand_activity_constraint_rpsdtv_dem, rule=commodities.demand_activity_constraint
+            self.demand_constraint_rpsd_dem, rule=commodities.demand_constraint
         )
 
         self.commodity_balance_constraint_rpsdc = Set(
