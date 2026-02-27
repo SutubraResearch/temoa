@@ -9,6 +9,10 @@ save_excel = false
 neos = false
 time_sequencing = "seasonal_timeslices"
 reserve_margin = "static"
+output_threshold_capacity = 1.0
+output_threshold_activity = 1.0
+output_threshold_emission = 1.0
+output_threshold_cost = 1.0
 
 [myopic]
 view_depth = 1
