@@ -2,6 +2,7 @@
 Basic-level atomic functions that can be used by a sequencer, as needed
 """
 
+import os
 import sqlite3
 from collections.abc import Generator, Iterable
 from contextlib import contextmanager
@@ -189,12 +190,18 @@ def solve_instance(
         logger.error('No solver specified in solve sequence')
         raise TypeError('Error occurred during solve, see log')
 
-    optimizer = SolverFactory(solver_name)
+    # Use gurobi_direct if TEMOA_GUROBI_DIRECT=1 (bypasses LP file I/O)
+    effective_solver = solver_name
+    if solver_name == 'gurobi' and os.environ.get('TEMOA_GUROBI_DIRECT') == '1':
+        effective_solver = 'gurobi_direct'
+        logger.info('Using gurobi_direct interface (TEMOA_GUROBI_DIRECT=1)')
+
+    optimizer = SolverFactory(effective_solver)
     if isinstance(optimizer, UnknownSolver):
         logger.error(
             'Failed to create a solver instance for name: %s.  Check name and availability on '
             'this system',
-            solver_name,
+            effective_solver,
         )
         raise TypeError('Failed to make Solver instance.  See log.')
 
@@ -213,13 +220,29 @@ def solve_instance(
         optimizer.options['barrier convergetol'] = 1.0e-3
         optimizer.options['feasopt tolerance'] = 1.0e-4
 
-    elif solver_name == 'gurobi':
+    elif solver_name in ('gurobi', 'gurobi_direct'):
         # Note: these parameter values match mip-dev / PyPSA (see: https://pypsa-eur.readthedocs.io/en/latest/configuration.html)
         optimizer.options['Method'] = 2  # barrier
         optimizer.options['Crossover'] = 0  # non basic solution, ie no crossover
         optimizer.options['BarConvTol'] = 1.0e-3
         optimizer.options['FeasibilityTol'] = 1.0e-4
-        # optimizer.options["BarOrder"] = 0 # if solve times seem unusually long, try 0 or 1
+
+        # Barrier ordering: env TEMOA_BAR_ORDER overrides default (0=AMD, -1=auto/ND, 1=ND+AMD)
+        bar_order = int(os.environ.get('TEMOA_BAR_ORDER', '0'))
+        optimizer.options['BarOrder'] = bar_order
+        logger.info('Gurobi BarOrder=%d', bar_order)
+
+        # Optional: aggressive scaling (TEMOA_SCALE_FLAG=2)
+        scale_flag = os.environ.get('TEMOA_SCALE_FLAG')
+        if scale_flag is not None:
+            optimizer.options['ScaleFlag'] = int(scale_flag)
+            logger.info('Gurobi ScaleFlag=%s', scale_flag)
+
+        # Optional: homogeneous barrier (TEMOA_BAR_HOMOGENEOUS=1)
+        bar_homogeneous = os.environ.get('TEMOA_BAR_HOMOGENEOUS')
+        if bar_homogeneous is not None:
+            optimizer.options['BarHomogeneous'] = int(bar_homogeneous)
+            logger.info('Gurobi BarHomogeneous=%s', bar_homogeneous)
 
     elif solver_name == 'appsi_highs':
         pass

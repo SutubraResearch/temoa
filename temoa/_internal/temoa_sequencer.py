@@ -136,7 +136,12 @@ class TemoaSequencer:
             with sqlite3.connect(self.config.input_database) as con:
                 hybrid_loader = HybridLoader(db_connection=con, config=self.config)
                 data_portal = hybrid_loader.load_data_portal(myopic_index=None)
-                instance = build_instance(data_portal, silent=self.config.silent)
+                instance = build_instance(
+                    data_portal,
+                    silent=self.config.silent,
+                    keep_lp_file=self.config.save_lp_file,
+                    lp_path=self.config.output_path,
+                )
 
             logger.info('Model build process complete.')
             return instance
