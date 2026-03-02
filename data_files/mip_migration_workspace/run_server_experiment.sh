@@ -29,12 +29,17 @@
 
 set -euo pipefail
 
+# cd to repo root (script lives in data_files/mip_migration_workspace/)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/../.."
+
 EXPERIMENT="${1:-baseline}"
 
 echo "=== Temoa Solver Experiment: $EXPERIMENT ==="
 echo "Date: $(date)"
 echo "Node: $(hostname)"
 echo "Job ID: ${SLURM_JOB_ID:-local}"
+echo "Working dir: $(pwd)"
 
 # Activate environment
 source .venv/bin/activate
