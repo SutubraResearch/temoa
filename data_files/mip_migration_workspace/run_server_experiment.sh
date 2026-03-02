@@ -80,7 +80,7 @@ echo "  TEMOA_BAR_HOMOGENEOUS=${TEMOA_BAR_HOMOGENEOUS:-<not set>}"
 echo "  TEMOA_GUROBI_DIRECT=${TEMOA_GUROBI_DIRECT:-<not set>}"
 echo ""
 
-CONFIG="data_files/my_configs/full_national_myopic.toml"
+CONFIG="${2:-data_files/my_configs/full_national_myopic.toml}"
 echo "Config file: $CONFIG"
 echo "Starting temoa run..."
 echo ""
