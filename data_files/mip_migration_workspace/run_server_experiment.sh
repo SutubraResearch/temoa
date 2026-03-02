@@ -29,9 +29,8 @@
 
 set -euo pipefail
 
-# cd to repo root (script lives in data_files/mip_migration_workspace/)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/../.."
+# cd to repo root
+cd /trace/home/cwade2/code_repos/temoa_github/temoa
 
 EXPERIMENT="${1:-baseline}"
 
