@@ -772,6 +772,9 @@ class TemoaModel(AbstractModel):
         self.storage_level_rpsdtv = Set(dimen=6, initialize=storage.storage_level_variable_indices)
         self.v_storage_level = Var(self.storage_level_rpsdtv, domain=NonNegativeReals)
 
+        self.storage_init_rpstv = Set(dimen=5, initialize=storage.storage_init_variable_indices)
+        self.v_storage_init = Var(self.storage_init_rpstv, domain=NonNegativeReals)
+
         self.seasonal_storage_level_rpstv = Set(
             dimen=5, initialize=storage.seasonal_storage_level_variable_indices
         )
