@@ -59,7 +59,15 @@ def test_storage_fraction(system_test_run: tuple[str, Any, TemoaModel, Any]) -> 
 )
 def test_state_sequencing(system_test_run: tuple[str, Any, TemoaModel, Any]) -> None:
     """
-    Make sure that everything is looping properly
+    Make sure that everything is looping properly.
+
+    For non-seasonal storage, the chain is anchored by v_storage_init:
+      d_first: v_storage_init + SE = v_storage_level[d_first]
+      middle:  v_storage_level[d_prev] + SE = v_storage_level[d]
+      d_last:  v_storage_level[d_prev] + SE = v_storage_init
+
+    For seasonal storage, the original time_next chain is used (last tod is skipped,
+    handled by seasonal_storage_energy_constraint).
     """
 
     model: TemoaModel  # helps with typing for some reason...
@@ -67,6 +75,9 @@ def test_state_sequencing(system_test_run: tuple[str, Any, TemoaModel, Any]) -> 
     assert len(model.storage_level_rpsdtv) > 0, (
         'This model does not appear to have any available storage components'
     )
+
+    d_first = model.time_of_day.first()
+    d_last = model.time_of_day.last()
 
     for r, p, s, d, t, v in model.storage_level_rpsdtv:
         charge = sum(
@@ -80,15 +91,43 @@ def test_state_sequencing(system_test_run: tuple[str, Any, TemoaModel, Any]) -> 
             for S_i in model.process_inputs_by_output[r, p, t, v, S_o]
         )
 
-        s_next, d_next = model.time_next[p, s, d]
+        stored_energy = charge - discharge
 
-        state = model.v_storage_level[r, p, s, d, t, v].value  # type: ignore [attr-defined] # I can't figure out how to get mypy to see value through the pyomo stubs
-        next_state = model.v_storage_level[r, p, s_next, d_next, t, v].value  # type: ignore [attr-defined] # I can't figure out how to get mypy to see value through the pyomo stubs
-
-        assert state + charge - discharge == pytest.approx(next_state, abs=1e-5), (
-            f'model fails to correctly sequence storage states {r, p, s, t, v} sequenced {s, d} '
-            f'to {s_next, d_next}'
-        )
+        if not model.is_seasonal_storage[t]:
+            # Non-seasonal: chain anchored by v_storage_init
+            if d == d_first:
+                prev_state = model.v_storage_init[r, p, s, t, v].value  # type: ignore [attr-defined]
+                curr_state = model.v_storage_level[r, p, s, d, t, v].value  # type: ignore [attr-defined]
+                assert prev_state + stored_energy == pytest.approx(curr_state, abs=1e-5), (
+                    f'model fails to sequence storage {r, p, s, t, v} at first tod {d}: '
+                    f'init({prev_state}) + SE({stored_energy}) != level({curr_state})'
+                )
+            elif d == d_last:
+                d_prev = model.time_of_day.prev(d)
+                prev_state = model.v_storage_level[r, p, s, d_prev, t, v].value  # type: ignore [attr-defined]
+                init_state = model.v_storage_init[r, p, s, t, v].value  # type: ignore [attr-defined]
+                assert prev_state + stored_energy == pytest.approx(init_state, abs=1e-5), (
+                    f'model fails to sequence storage {r, p, s, t, v} at last tod {d}: '
+                    f'level({prev_state}) + SE({stored_energy}) != init({init_state})'
+                )
+            else:
+                d_prev = model.time_of_day.prev(d)
+                prev_state = model.v_storage_level[r, p, s, d_prev, t, v].value  # type: ignore [attr-defined]
+                curr_state = model.v_storage_level[r, p, s, d, t, v].value  # type: ignore [attr-defined]
+                assert prev_state + stored_energy == pytest.approx(curr_state, abs=1e-5), (
+                    f'model fails to sequence storage {r, p, s, t, v} at {s, d}: '
+                    f'level({prev_state}) + SE({stored_energy}) != level({curr_state})'
+                )
+        else:
+            # Seasonal storage: original time_next chain (last tod skipped)
+            if d == d_last:
+                continue  # handled by seasonal_storage_energy_constraint
+            s_next, d_next = model.time_next[p, s, d]
+            state = model.v_storage_level[r, p, s, d, t, v].value  # type: ignore [attr-defined]
+            next_state = model.v_storage_level[r, p, s_next, d_next, t, v].value  # type: ignore [attr-defined]
+            assert state + stored_energy == pytest.approx(next_state, abs=1e-5), (
+                f'model fails to sequence storage {r, p, s, t, v} at {s, d} to {s_next, d_next}'
+            )
 
 
 @pytest.mark.parametrize(

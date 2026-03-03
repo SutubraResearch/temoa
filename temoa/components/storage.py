@@ -55,6 +55,25 @@ def seasonal_storage_constraint_indices(
     return set()
 
 
+def storage_init_variable_indices(
+    model: TemoaModel,
+) -> set[tuple[Region, Period, Season, Technology, Vintage]]:
+    """Index set for v_storage_init: one per (r, p, s, t, v) for non-seasonal storage.
+
+    This variable acts as the start/end anchor for the daily storage cycle within
+    each season, breaking the closed cycle in the StorageEnergy constraint chain
+    into an open path. This gives the barrier ordering algorithm (AMD) natural
+    separator nodes, reducing Cholesky fill-in at scale.
+    """
+    if not model.storage_level_indices_rpsdtv:
+        return set()
+    return {
+        (r, p, s, t, v)
+        for r, p, s, _d, t, v in model.storage_level_indices_rpsdtv
+        if not model.is_seasonal_storage[t]
+    }
+
+
 def storage_constraint_indices(
     model: TemoaModel,
 ) -> set[tuple[Region, Period, Season, TimeOfDay, Technology, Vintage]] | None:
@@ -73,20 +92,29 @@ def storage_energy_constraint(
 ) -> ExprLike:
     r"""
     This constraint enforces the continuity of storage level between time slices.
-    storage level in the next time slice (:math:`s_{next}, d_{next}`) is equal to
-    current storage level plus net charge in the current time slice.
+
+    For non-seasonal storage, the daily cycle is anchored by :math:`v\_storage\_init`
+    which acts as both the starting and ending level for each season. This breaks
+    the constraint chain into an open path (rather than a closed cycle), giving the
+    barrier ordering algorithm better separator nodes for Cholesky factorization.
+
+    **First time-of-day:**
 
     .. math::
-        :label: Storage Energy
+        {SI}_{r,p,s,t,v} + \text{net\_charge} = {SL}_{r,p,s,d_1,t,v}
 
-            {SL}_{r,p,s,d,t,v}
-            + \sum\limits_{I,O} \mathbf{FIS}_{r,p,s,d,i,t,v,o} \cdot {EFF}_{r,i,t,v,o}
-            - \sum\limits_{I,O} \mathbf{FO}_{r,p,s,d,i,t,v,o}
-            = {SL}_{r,p,s_{{next}},d_{{next}},t,v}
+    **Middle time-of-day:**
 
-    Note that for all seasonal representations except consecutive_days, the last time slice
-    of each season will loop back to the first time slice of the same season, preventing
-    seasonal deltas for non-seasonal storage (see SeasonalStorageEnergyUpperBound).
+    .. math::
+        {SL}_{r,p,s,d_{prev},t,v} + \text{net\_charge} = {SL}_{r,p,s,d,t,v}
+
+    **Last time-of-day:**
+
+    .. math::
+        {SL}_{r,p,s,d_{prev},t,v} + \text{net\_charge} = {SI}_{r,p,s,t,v}
+
+    For seasonal storage, the last time-of-day is skipped (handled by
+    SeasonalStorageEnergy_constraint).
     """
 
     # We allow a non-zero daily delta only in the case of seasonal storage
@@ -112,14 +140,37 @@ def storage_energy_constraint(
 
     stored_energy = charge - discharge
 
-    s_next: Season
-    d_next: TimeOfDay
-    s_next, d_next = model.time_next[p, s, d]
-
-    expr = (
-        model.v_storage_level[r, p, s, d, t, v] + stored_energy
-        == model.v_storage_level[r, p, s_next, d_next, t, v]
-    )
+    # For non-seasonal storage, use v_storage_init as the chain anchor
+    if not model.is_seasonal_storage[t]:
+        if d == model.time_of_day.first():
+            # First timeslice: start from v_storage_init
+            expr = (
+                model.v_storage_init[r, p, s, t, v] + stored_energy
+                == model.v_storage_level[r, p, s, d, t, v]
+            )
+        elif d == model.time_of_day.last():
+            # Last timeslice: wrap back to v_storage_init
+            d_prev = model.time_of_day.prev(d)
+            expr = (
+                model.v_storage_level[r, p, s, d_prev, t, v] + stored_energy
+                == model.v_storage_init[r, p, s, t, v]
+            )
+        else:
+            # Middle timeslices: chain from previous storage level
+            d_prev = model.time_of_day.prev(d)
+            expr = (
+                model.v_storage_level[r, p, s, d_prev, t, v] + stored_energy
+                == model.v_storage_level[r, p, s, d, t, v]
+            )
+    else:
+        # Seasonal storage: chain forward using time_next (original logic)
+        s_next: Season
+        d_next: TimeOfDay
+        s_next, d_next = model.time_next[p, s, d]
+        expr = (
+            model.v_storage_level[r, p, s, d, t, v] + stored_energy
+            == model.v_storage_level[r, p, s_next, d_next, t, v]
+        )
 
     return expr
 
