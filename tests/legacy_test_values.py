@@ -22,11 +22,10 @@ test_vals = {
         ExpectedVals.OBJ_VALUE: 468551.6373,
         ExpectedVals.EFF_DOMAIN_SIZE: 30720,
         ExpectedVals.EFF_INDEX_SIZE: 74,
-        # reduced 2026/02 after reverting demand to timeslice level (removed DemandActivity,
-        # demand techs no longer get v_flow_out_annual — fixes barrier factorization perf)
-        ExpectedVals.CONSTR_COUNT: 2414,
-        # +48 in 2026/03: v_storage_init added to break storage cycle → chain topology
-        ExpectedVals.VAR_COUNT: 1948,
+        # +216/+48 in 2026/03: include tech_uncap in capacity constraints (barrier separators)
+        # and v_storage_init added to break storage cycle → chain topology
+        ExpectedVals.CONSTR_COUNT: 2630,
+        ExpectedVals.VAR_COUNT: 1996,
     },
     'utopia': {
         # reduced 2026/02 after reverting demand to timeslice level — model now has more
@@ -35,17 +34,18 @@ test_vals = {
         ExpectedVals.OBJ_VALUE: 34463.4797,
         ExpectedVals.EFF_DOMAIN_SIZE: 12312,
         ExpectedVals.EFF_INDEX_SIZE: 64,
-        # reduced 2026/02 after reverting demand to timeslice level
-        ExpectedVals.CONSTR_COUNT: 1291,
-        # +27 in 2026/03: v_storage_init added to break storage cycle → chain topology
-        ExpectedVals.VAR_COUNT: 1082,
+        # +147/+42 in 2026/03: include tech_uncap in capacity constraints (barrier separators)
+        # and v_storage_init added to break storage cycle → chain topology
+        ExpectedVals.CONSTR_COUNT: 1438,
+        ExpectedVals.VAR_COUNT: 1124,
     },
     'mediumville': {
         ExpectedVals.OBJ_VALUE: 7035.7275,
         ExpectedVals.EFF_DOMAIN_SIZE: 2800,
         ExpectedVals.EFF_INDEX_SIZE: 18,
         # reduced 2026/02 after reverting demand to timeslice level
-        ExpectedVals.CONSTR_COUNT: 228,
+        # -8 in 2026/03: disable season ramp for seasonal_timeslices (matches mip-dev)
+        ExpectedVals.CONSTR_COUNT: 220,
         # +2 in 2026/03: v_storage_init added to break storage cycle → chain topology
         ExpectedVals.VAR_COUNT: 142,
     },

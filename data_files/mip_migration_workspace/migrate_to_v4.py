@@ -640,13 +640,11 @@ def migrate(source: Path, schema: Path, target: Path, days_per_period: int | Non
         """
     )
 
-    # Remove unlimited capacity techs from existing_capacity
-    conn.execute(
-        """
-        DELETE FROM existing_capacity
-        WHERE tech IN (SELECT tech FROM technology WHERE unlim_cap = 1)
-        """
-    )
+    # Keep existing_capacity for tech_uncap techs.  The adjusted_capacity_constraint
+    # now indexes ALL active_activity_rptv (including tech_uncap), creating equality
+    # constraints that pin v_capacity = existing_capacity * PLF.  These equalities
+    # act as separator nodes in the constraint graph, improving Cholesky fill-in
+    # during barrier factorization (matching mip-dev's structure).
 
     # Report what was set
     unlim_techs = conn.execute(

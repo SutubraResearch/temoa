@@ -203,8 +203,7 @@ def capacity_annual_constraint_indices(
     if model.active_activity_rptv:
         for r, p, t, v in model.active_activity_rptv:
             if t in model.tech_annual and t not in model.tech_demand:
-                if t not in model.tech_uncap:
-                    capacity_indices.add((r, p, t, v))
+                capacity_indices.add((r, p, t, v))
     else:
         return set()
 
@@ -218,11 +217,10 @@ def capacity_constraint_indices(
     if model.active_activity_rptv:
         for r, p, t, v in model.active_activity_rptv:
             if t not in model.tech_annual or t in model.tech_demand:
-                if t not in model.tech_uncap:
-                    if t not in model.tech_storage:
-                        for s in model.time_season[p]:
-                            for d in model.time_of_day:
-                                capacity_indices.add((r, p, s, d, t, v))
+                if t not in model.tech_storage:
+                    for s in model.time_season[p]:
+                        for d in model.time_of_day:
+                            capacity_indices.add((r, p, s, d, t, v))
     else:
         return set()
 
@@ -259,6 +257,19 @@ def capacity_factor_tech_indices(
 def capacity_available_variable_indices_vintage(
     model: TemoaModel,
 ) -> set[tuple[Region, Period, Technology, Vintage]] | None:
+    return model.active_capacity_available_rptv
+
+
+def capacity_variable_indices_rptv(
+    model: TemoaModel,
+) -> set[tuple[Region, Period, Technology, Vintage]] | None:
+    """Index set for v_capacity — ALL active (r,p,t,v) including tech_uncap.
+
+    Including tech_uncap creates capacity variables and adjusted_capacity_constraints
+    for unlimited-capacity techs (import_, elec_distribution, etc.). The capacity
+    constraints then link these techs' flow variables to the capacity variable, giving
+    the barrier ordering algorithm structural separators that reduce Cholesky fill-in.
+    """
     return model.active_capacity_available_rptv
 
 
@@ -482,6 +493,35 @@ def capacity_constraint(
         )
 
 
+def adjusted_capacity_constraint_indices(
+    model: TemoaModel,
+) -> set[tuple[Region, Period, Technology, Vintage]]:
+    """All active (r,p,t,v) processes — including tech_uncap with existing capacity.
+
+    Matches mip-dev's AdjustedCapacity_Constraint indexing, which is NOT filtered
+    by tech_uncap.  Decoupled from cost_fixed_rptv (which excludes tech_uncap because
+    they have no fixed costs) so that adjusted_capacity_constraint is built for ALL
+    active processes that have capacity data.
+
+    For tech_uncap with existing_capacity, this creates equality constraints that pin
+    v_capacity, producing separator nodes in the constraint graph that improve Cholesky
+    fill-in during barrier factorization.
+
+    tech_uncap WITHOUT existing_capacity data are excluded (they have no capacity to pin
+    and are not buildable).
+    """
+    if not model.active_activity_rptv:
+        return set()
+    # Include all non-tech_uncap plus tech_uncap that have existing_capacity data.
+    # tech_uncap are never buildable (no v_new_capacity), so only existing vintages apply.
+    existing_cap = set(model.existing_capacity.keys())
+    return {
+        (r, p, t, v)
+        for r, p, t, v in model.active_activity_rptv
+        if t not in model.tech_uncap or (r, t, v) in existing_cap
+    }
+
+
 def adjusted_capacity_constraint(
     model: TemoaModel, r: Region, p: Period, t: Technology, v: Vintage
 ) -> ExprLike:
@@ -635,14 +675,14 @@ def create_capacity_and_retirement_sets(model: TemoaModel) -> None:
         for v in model.process_vintages[r, p, t]
         if t not in model.tech_uncap and v in model.time_optimize
     }
+    # Include tech_uncap in capacity sets — matching mip-dev behaviour. This creates
+    # capacity variables and constraints for unlimited-capacity techs (import_, etc.),
+    # which gives the barrier ordering algorithm (AMD) structural separators that reduce
+    # Cholesky fill-in at scale. The constraints are non-binding for tech_uncap since
+    # their capacity is pinned to existing_capacity by adjusted_capacity_constraint.
     model.active_capacity_available_rpt = {
-        (r, p, t)
-        for r, p, t in model.process_vintages
-        if model.process_vintages[r, p, t] and t not in model.tech_uncap
+        (r, p, t) for r, p, t in model.process_vintages if model.process_vintages[r, p, t]
     }
     model.active_capacity_available_rptv = {
-        (r, p, t, v)
-        for r, p, t in model.process_vintages
-        for v in model.process_vintages[r, p, t]
-        if t not in model.tech_uncap
+        (r, p, t, v) for r, p, t in model.process_vintages for v in model.process_vintages[r, p, t]
     }

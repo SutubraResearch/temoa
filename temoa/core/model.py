@@ -783,7 +783,7 @@ class TemoaModel(AbstractModel):
         )
 
         # Derived decision variables
-        self.capacity_var_rptv = Set(dimen=4, initialize=costs.cost_fixed_indices)
+        self.capacity_var_rptv = Set(dimen=4, initialize=capacity.capacity_variable_indices_rptv)
         self.v_capacity = Var(self.capacity_var_rptv, domain=NonNegativeReals)
 
         self.new_capacity_var_rtv = Set(dimen=3, initialize=capacity.capacity_variable_indices)
@@ -854,8 +854,11 @@ class TemoaModel(AbstractModel):
         self.progress_marker_4b = BuildAction(
             ['Starting adjusted_capacity_constraint'], rule=progress_check
         )
+        self.adjusted_capacity_rptv = Set(
+            dimen=4, initialize=capacity.adjusted_capacity_constraint_indices
+        )
         self.adjusted_capacity_constraint = Constraint(
-            self.cost_fixed_rptv, rule=capacity.adjusted_capacity_constraint
+            self.adjusted_capacity_rptv, rule=capacity.adjusted_capacity_constraint
         )
         self.progress_marker_5 = BuildAction(['Finished Capacity Constraints'], rule=progress_check)
 
