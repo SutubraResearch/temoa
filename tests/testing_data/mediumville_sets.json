@@ -1,658 +1,427 @@
 {
-  "annual_commodity_balance_constraint_rpc": [],
-  "annual_retirement_var_rptv": [],
-  "baseload_diurnal_constraint_rpsdtv": [
+  "operator": [
+    "e",
+    "ge",
+    "le"
+  ],
+  "time_exist": [
+    2020
+  ],
+  "time_future": [
+    2025,
+    2030
+  ],
+  "time_optimize": [
+    2025
+  ],
+  "vintage_exist": [
+    2020
+  ],
+  "vintage_optimize": [
+    2025
+  ],
+  "vintage_all": [
+    2020,
+    2025
+  ],
+  "time_season_all": [
+    "s1",
+    "s2"
+  ],
+  "time_season_to_sequential": [
+    "s1",
+    "s2"
+  ],
+  "time_season": [
+    2025
+  ],
+  "time_of_day": [
+    "d1",
+    "d2"
+  ],
+  "ordered_season_sequential": [
     [
-      "A",
       2025,
       "s1",
-      "d1",
-      "EH",
-      2025
+      "s1"
     ],
     [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "EH",
-      2025
-    ],
-    [
-      "A",
       2025,
       "s2",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "EH",
-      2025
+      "s2"
     ]
   ],
-  "capacity_annual_constraint_rptv": [
+  "regions": [
+    "A",
+    "B"
+  ],
+  "regional_indices": [
+    "A",
+    "A-B",
+    "B",
+    "B-A"
+  ],
+  "regional_global_indices": [
+    "A",
+    "B",
+    "global"
+  ],
+  "tech_production": [
+    "EF",
+    "EFL",
+    "EH",
+    "FGF_pipe",
+    "GeoHeater",
+    "GeoThermal",
+    "batt",
+    "bulbs",
+    "heater",
+    "well"
+  ],
+  "tech_all": [
+    "EF",
+    "EFL",
+    "EH",
+    "FGF_pipe",
+    "GeoHeater",
+    "GeoThermal",
+    "batt",
+    "bulbs",
+    "heater",
+    "well"
+  ],
+  "tech_baseload": [
+    "EH"
+  ],
+  "tech_annual": [
+    "GeoThermal"
+  ],
+  "tech_demand": [
+    "GeoHeater",
+    "bulbs",
+    "heater"
+  ],
+  "tech_storage": [
+    "batt"
+  ],
+  "tech_reserve": [
+    "EF"
+  ],
+  "tech_upramping": [
+    "EH"
+  ],
+  "tech_downramping": [
+    "EH"
+  ],
+  "tech_curtailment": [
+    "EH"
+  ],
+  "tech_flex": [
+    "EFL"
+  ],
+  "tech_exchange": [
+    "FGF_pipe"
+  ],
+  "tech_group_names": [
+    "A_tech_grp_1",
+    "RPS_common"
+  ],
+  "tech_group_members": [
+    "A_tech_grp_1",
+    "RPS_common"
+  ],
+  "tech_or_group": [
+    "A_tech_grp_1",
+    "EF",
+    "EFL",
+    "EH",
+    "FGF_pipe",
+    "GeoHeater",
+    "GeoThermal",
+    "RPS_common",
+    "batt",
+    "bulbs",
+    "heater",
+    "well"
+  ],
+  "tech_seasonal_storage": [],
+  "tech_uncap": [],
+  "tech_exist": [
+    "EH"
+  ],
+  "tech_with_capacity": [
+    "EF",
+    "EFL",
+    "EH",
+    "FGF_pipe",
+    "GeoHeater",
+    "GeoThermal",
+    "batt",
+    "bulbs",
+    "heater",
+    "well"
+  ],
+  "tech_retirement": [
+    "EH"
+  ],
+  "commodity_demand": [
+    "RH",
+    "RL"
+  ],
+  "commodity_emissions": [
+    "FusionGas",
+    "co2"
+  ],
+  "commodity_physical": [
+    "ELC",
+    "FusionGasFuel",
+    "GeoHyd",
+    "HYD",
+    "earth"
+  ],
+  "commodity_waste": [],
+  "commodity_flex": [
+    "FusionGasFuel"
+  ],
+  "commodity_source": [
+    "earth"
+  ],
+  "commodity_annual": [],
+  "commodity_carrier": [
+    "ELC",
+    "FusionGasFuel",
+    "GeoHyd",
+    "HYD",
+    "RH",
+    "RL",
+    "earth"
+  ],
+  "commodity_all": [
+    "ELC",
+    "FusionGas",
+    "FusionGasFuel",
+    "GeoHyd",
+    "HYD",
+    "RH",
+    "RL",
+    "co2",
+    "earth"
+  ],
+  "time_sequencing": [
+    "seasonal_timeslices"
+  ],
+  "time_manual": [],
+  "demand_constraint_rpc": [
     [
       "A",
       2025,
+      "RH"
+    ],
+    [
+      "A",
+      2025,
+      "RL"
+    ],
+    [
+      "B",
+      2025,
+      "RH"
+    ],
+    [
+      "B",
+      2025,
+      "RL"
+    ]
+  ],
+  "lifetime_process_rtv": [
+    [
+      "A",
+      "EF",
+      2025
+    ],
+    [
+      "A",
+      "EFL",
+      2025
+    ],
+    [
+      "A",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "A",
+      "GeoThermal",
+      2025
+    ],
+    [
+      "A",
+      "bulbs",
+      2025
+    ],
+    [
+      "A",
+      "heater",
+      2025
+    ],
+    [
+      "A",
+      "well",
+      2025
+    ],
+    [
+      "A-B",
+      "FGF_pipe",
+      2025
+    ],
+    [
+      "B",
+      "EF",
+      2025
+    ],
+    [
+      "B",
+      "EH",
+      2025
+    ],
+    [
+      "B",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "B",
       "GeoThermal",
       2025
     ],
     [
       "B",
-      2025,
+      "batt",
+      2025
+    ],
+    [
+      "B",
+      "bulbs",
+      2025
+    ],
+    [
+      "B",
+      "heater",
+      2025
+    ],
+    [
+      "B",
+      "well",
+      2025
+    ],
+    [
+      "B-A",
+      "FGF_pipe",
+      2025
+    ]
+  ],
+  "loan_lifetime_process_rtv": [
+    [
+      "A",
+      "EF",
+      2025
+    ],
+    [
+      "A",
+      "EFL",
+      2025
+    ],
+    [
+      "A",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "A",
       "GeoThermal",
       2025
+    ],
+    [
+      "A",
+      "bulbs",
+      2025
+    ],
+    [
+      "A",
+      "heater",
+      2025
+    ],
+    [
+      "A",
+      "well",
+      2025
+    ],
+    [
+      "A-B",
+      "FGF_pipe",
+      2025
+    ],
+    [
+      "B",
+      "EF",
+      2025
+    ],
+    [
+      "B",
+      "EH",
+      2025
+    ],
+    [
+      "B",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "B",
+      "GeoThermal",
+      2025
+    ],
+    [
+      "B",
+      "batt",
+      2025
+    ],
+    [
+      "B",
+      "bulbs",
+      2025
+    ],
+    [
+      "B",
+      "heater",
+      2025
+    ],
+    [
+      "B",
+      "well",
+      2025
+    ],
+    [
+      "B-A",
+      "FGF_pipe",
+      2025
     ]
   ],
-  "capacity_available_var_rpt": [
-    [
-      "A",
-      2025,
-      "EF"
-    ],
-    [
-      "A",
-      2025,
-      "EFL"
-    ],
-    [
-      "A",
-      2025,
-      "EH"
-    ],
-    [
-      "A",
-      2025,
-      "GeoHeater"
-    ],
-    [
-      "A",
-      2025,
-      "GeoThermal"
-    ],
-    [
-      "A",
-      2025,
-      "bulbs"
-    ],
-    [
-      "A",
-      2025,
-      "heater"
-    ],
-    [
-      "A",
-      2025,
-      "well"
-    ],
-    [
-      "A-B",
-      2025,
-      "FGF_pipe"
-    ],
+  "renewable_portfolio_standard_constraint_rpg": [
     [
       "B",
       2025,
-      "EF"
-    ],
-    [
-      "B",
-      2025,
-      "EH"
-    ],
-    [
-      "B",
-      2025,
-      "GeoHeater"
-    ],
-    [
-      "B",
-      2025,
-      "GeoThermal"
-    ],
-    [
-      "B",
-      2025,
-      "batt"
-    ],
-    [
-      "B",
-      2025,
-      "bulbs"
-    ],
-    [
-      "B",
-      2025,
-      "heater"
-    ],
-    [
-      "B",
-      2025,
-      "well"
-    ],
-    [
-      "B-A",
-      2025,
-      "FGF_pipe"
-    ]
-  ],
-  "capacity_constraint_rpsdtv": [
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "EF",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "EFL",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "bulbs",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "heater",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "well",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "EF",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "EFL",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "bulbs",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "heater",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "well",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "EF",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "EFL",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "bulbs",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "heater",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "well",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "EF",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "EFL",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "bulbs",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "heater",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "well",
-      2025
-    ],
-    [
-      "A-B",
-      2025,
-      "s1",
-      "d1",
-      "FGF_pipe",
-      2025
-    ],
-    [
-      "A-B",
-      2025,
-      "s1",
-      "d2",
-      "FGF_pipe",
-      2025
-    ],
-    [
-      "A-B",
-      2025,
-      "s2",
-      "d1",
-      "FGF_pipe",
-      2025
-    ],
-    [
-      "A-B",
-      2025,
-      "s2",
-      "d2",
-      "FGF_pipe",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "EF",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "bulbs",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "heater",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "well",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "EF",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "bulbs",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "heater",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "well",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "EF",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "bulbs",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "heater",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "well",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "EF",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "bulbs",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "heater",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "well",
-      2025
-    ],
-    [
-      "B-A",
-      2025,
-      "s1",
-      "d1",
-      "FGF_pipe",
-      2025
-    ],
-    [
-      "B-A",
-      2025,
-      "s1",
-      "d2",
-      "FGF_pipe",
-      2025
-    ],
-    [
-      "B-A",
-      2025,
-      "s2",
-      "d1",
-      "FGF_pipe",
-      2025
-    ],
-    [
-      "B-A",
-      2025,
-      "s2",
-      "d2",
-      "FGF_pipe",
-      2025
+      "RPS_common"
     ]
   ],
   "capacity_factor_rpsdt": [
@@ -1161,390 +930,486 @@
       "FGF_pipe"
     ]
   ],
-  "capacity_var_rptv": [
+  "capacity_constraint_rpsdtv": [
     [
       "A",
       2025,
+      "s1",
+      "d1",
       "EF",
       2025
     ],
     [
       "A",
       2025,
+      "s1",
+      "d1",
       "EFL",
       2025
     ],
     [
       "A",
       2025,
+      "s1",
+      "d1",
       "EH",
       2025
     ],
     [
       "A",
       2025,
+      "s1",
+      "d1",
       "GeoHeater",
       2025
     ],
     [
       "A",
       2025,
-      "GeoThermal",
-      2025
-    ],
-    [
-      "A",
-      2025,
+      "s1",
+      "d1",
       "bulbs",
       2025
     ],
     [
       "A",
       2025,
+      "s1",
+      "d1",
       "heater",
       2025
     ],
     [
       "A",
       2025,
+      "s1",
+      "d1",
+      "well",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "EF",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "EFL",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "bulbs",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "heater",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "well",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "EF",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "EFL",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "bulbs",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "heater",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "well",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "EF",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "EFL",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "bulbs",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "heater",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
       "well",
       2025
     ],
     [
       "A-B",
       2025,
+      "s1",
+      "d1",
+      "FGF_pipe",
+      2025
+    ],
+    [
+      "A-B",
+      2025,
+      "s1",
+      "d2",
+      "FGF_pipe",
+      2025
+    ],
+    [
+      "A-B",
+      2025,
+      "s2",
+      "d1",
+      "FGF_pipe",
+      2025
+    ],
+    [
+      "A-B",
+      2025,
+      "s2",
+      "d2",
       "FGF_pipe",
       2025
     ],
     [
       "B",
       2025,
+      "s1",
+      "d1",
       "EF",
       2025
     ],
     [
       "B",
       2025,
+      "s1",
+      "d1",
       "EH",
       2025
     ],
     [
       "B",
       2025,
+      "s1",
+      "d1",
       "GeoHeater",
       2025
     ],
     [
       "B",
       2025,
-      "GeoThermal",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "batt",
-      2025
-    ],
-    [
-      "B",
-      2025,
+      "s1",
+      "d1",
       "bulbs",
       2025
     ],
     [
       "B",
       2025,
+      "s1",
+      "d1",
       "heater",
       2025
     ],
     [
       "B",
       2025,
+      "s1",
+      "d1",
+      "well",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "EF",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "EH",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "bulbs",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "heater",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "well",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "EF",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "EH",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "bulbs",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "heater",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "well",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "EF",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "EH",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "GeoHeater",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "bulbs",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "heater",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
       "well",
       2025
     ],
     [
       "B-A",
       2025,
+      "s1",
+      "d1",
       "FGF_pipe",
       2025
-    ]
-  ],
-  "commodity_all": [
-    "ELC",
-    "FusionGas",
-    "FusionGasFuel",
-    "GeoHyd",
-    "HYD",
-    "RH",
-    "RL",
-    "co2",
-    "earth"
-  ],
-  "commodity_annual": [],
-  "commodity_balance_constraint_rpsdc": [
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "ELC"
     ],
     [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "FusionGasFuel"
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "GeoHyd"
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "HYD"
-    ],
-    [
-      "A",
+      "B-A",
       2025,
       "s1",
       "d2",
-      "ELC"
+      "FGF_pipe",
+      2025
     ],
     [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "FusionGasFuel"
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "GeoHyd"
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "HYD"
-    ],
-    [
-      "A",
+      "B-A",
       2025,
       "s2",
       "d1",
-      "ELC"
+      "FGF_pipe",
+      2025
     ],
     [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "FusionGasFuel"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "GeoHyd"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "HYD"
-    ],
-    [
-      "A",
+      "B-A",
       2025,
       "s2",
       "d2",
-      "ELC"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "FusionGasFuel"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "GeoHyd"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "HYD"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "ELC"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "FusionGasFuel"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "GeoHyd"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "HYD"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "ELC"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "FusionGasFuel"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "GeoHyd"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "HYD"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "ELC"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "FusionGasFuel"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "GeoHyd"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "HYD"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "ELC"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "FusionGasFuel"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "GeoHyd"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "HYD"
-    ]
-  ],
-  "commodity_carrier": [
-    "ELC",
-    "FusionGasFuel",
-    "GeoHyd",
-    "HYD",
-    "RH",
-    "RL",
-    "earth"
-  ],
-  "commodity_demand": [
-    "RH",
-    "RL"
-  ],
-  "commodity_emissions": [
-    "FusionGas",
-    "co2"
-  ],
-  "commodity_flex": [
-    "FusionGasFuel"
-  ],
-  "commodity_physical": [
-    "ELC",
-    "FusionGasFuel",
-    "GeoHyd",
-    "HYD",
-    "earth"
-  ],
-  "commodity_source": [
-    "earth"
-  ],
-  "commodity_waste": [],
-  "cost_emission_rpe": [
-    [
-      "A",
-      2025,
-      "co2"
+      "FGF_pipe",
+      2025
     ]
   ],
   "cost_fixed_rptv": [
@@ -1839,222 +1704,209 @@
       2025
     ]
   ],
-  "curtailment_var_rpsditvo": [
+  "cost_emission_rpe": [
     [
       "A",
       2025,
-      "s1",
-      "d1",
-      "HYD",
-      "EH",
-      2025,
-      "ELC"
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "HYD",
-      "EH",
-      2025,
-      "ELC"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "HYD",
-      "EH",
-      2025,
-      "ELC"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "HYD",
-      "EH",
-      2025,
-      "ELC"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "HYD",
-      "EH",
-      2025,
-      "ELC"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "HYD",
-      "EH",
-      2025,
-      "ELC"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "HYD",
-      "EH",
-      2025,
-      "ELC"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "HYD",
-      "EH",
-      2025,
-      "ELC"
+      "co2"
     ]
   ],
-  "demand_constraint_rpc": [
+  "process_life_frac_rptv": [
     [
       "A",
       2025,
-      "RH"
+      "EF",
+      2025
     ],
     [
       "A",
       2025,
-      "RL"
+      "EFL",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "GeoHeater",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "GeoThermal",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "bulbs",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "heater",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "well",
+      2025
+    ],
+    [
+      "A-B",
+      2025,
+      "FGF_pipe",
+      2025
     ],
     [
       "B",
       2025,
-      "RH"
+      "EF",
+      2025
     ],
     [
       "B",
       2025,
-      "RL"
+      "EH",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "GeoHeater",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "GeoThermal",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "batt",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "bulbs",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "heater",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "well",
+      2025
+    ],
+    [
+      "B-A",
+      2025,
+      "FGF_pipe",
+      2025
     ]
   ],
-  "demand_constraint_rpsd_dem": [
+  "limit_capacity_constraint_rpt": [
     [
       "A",
       2025,
-      "s1",
-      "d1",
-      "RH"
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "RL"
+      "A_tech_grp_1",
+      "ge"
     ],
     [
       "A",
       2025,
-      "s1",
-      "d2",
-      "RH"
+      "A_tech_grp_1",
+      "le"
     ],
     [
       "A",
       2025,
-      "s1",
-      "d2",
-      "RL"
+      "EH",
+      "ge"
     ],
     [
       "A",
       2025,
-      "s2",
-      "d1",
-      "RH"
+      "EH",
+      "le"
+    ],
+    [
+      "B",
+      2025,
+      "EH",
+      "le"
+    ],
+    [
+      "B",
+      2025,
+      "batt",
+      "ge"
+    ]
+  ],
+  "limit_new_capacity_constraint_rpt": [],
+  "limit_resource_constraint_rt": [
+    [
+      "B",
+      "EF",
+      "le"
+    ]
+  ],
+  "limit_activity_constraint_rpt": [
+    [
+      "A",
+      2025,
+      "A_tech_grp_1",
+      "ge"
     ],
     [
       "A",
       2025,
-      "s2",
-      "d1",
-      "RL"
+      "A_tech_grp_1",
+      "le"
     ],
     [
       "A",
       2025,
-      "s2",
-      "d2",
-      "RH"
+      "EF",
+      "ge"
     ],
     [
       "A",
       2025,
-      "s2",
-      "d2",
-      "RL"
+      "EF",
+      "le"
     ],
     [
       "B",
       2025,
-      "s1",
-      "d1",
-      "RH"
-    ],
+      "EH",
+      "le"
+    ]
+  ],
+  "limit_seasonal_capacity_factor_constraint_rpst": [],
+  "limit_annual_capacity_factor_constraint_rpto": [],
+  "limit_emission_constraint_rpe": [
     [
-      "B",
+      "A",
       2025,
-      "s1",
-      "d1",
-      "RL"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "RH"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "RL"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "RH"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "RL"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "RH"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "RL"
+      "co2",
+      "le"
     ]
   ],
   "emission_activity_reitvo": [
@@ -2315,108 +2167,62 @@
       "HYD"
     ]
   ],
-  "flex_var_annual_rpitvo": [],
-  "flex_var_rpsditvo": [
+  "limit_capacity_share_constraint_rpgg": [],
+  "limit_activity_share_constraint_rpgg": [],
+  "limit_new_capacity_share_constraint_rpgg": [
     [
       "A",
       2025,
-      "s1",
-      "d1",
-      "earth",
-      "EFL",
-      2025,
-      "FusionGasFuel"
+      "RPS_common",
+      "A_tech_grp_1",
+      "ge"
     ],
     [
-      "A",
+      "global",
       2025,
-      "s1",
-      "d2",
-      "earth",
-      "EFL",
-      2025,
-      "FusionGasFuel"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "earth",
-      "EFL",
-      2025,
-      "FusionGasFuel"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "earth",
-      "EFL",
-      2025,
-      "FusionGasFuel"
+      "RPS_common",
+      "A_tech_grp_1",
+      "le"
     ]
   ],
-  "flow_in_storage_rpsditvo": [
+  "storage_constraints_rpsdtv": [
     [
       "B",
       2025,
       "s1",
       "d1",
-      "ELC",
       "batt",
-      2025,
-      "ELC"
+      2025
     ],
     [
       "B",
       2025,
       "s1",
       "d2",
-      "ELC",
       "batt",
-      2025,
-      "ELC"
+      2025
     ],
     [
       "B",
       2025,
       "s2",
       "d1",
-      "ELC",
       "batt",
-      2025,
-      "ELC"
+      2025
     ],
     [
       "B",
       2025,
       "s2",
       "d2",
-      "ELC",
       "batt",
-      2025,
-      "ELC"
+      2025
     ]
   ],
-  "flow_var_annual_rpitvo": [
-    [
-      "A",
-      2025,
-      "earth",
-      "GeoThermal",
-      2025,
-      "GeoHyd"
-    ],
-    [
-      "B",
-      2025,
-      "earth",
-      "GeoThermal",
-      2025,
-      "GeoHyd"
-    ]
+  "seasonal_storage_constraints_rpsdtv": [],
+  "limit_storage_fraction_constraint_rpsdtv": [],
+  "reserve_margin_method": [
+    "static"
   ],
   "flow_var_rpsditvo": [
     [
@@ -3060,425 +2866,348 @@
       "FusionGasFuel"
     ]
   ],
-  "lifetime_process_rtv": [
+  "flow_var_annual_rpitvo": [
     [
       "A",
+      2025,
+      "earth",
+      "GeoThermal",
+      2025,
+      "GeoHyd"
+    ],
+    [
+      "B",
+      2025,
+      "earth",
+      "GeoThermal",
+      2025,
+      "GeoHyd"
+    ]
+  ],
+  "flex_var_rpsditvo": [
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "earth",
+      "EFL",
+      2025,
+      "FusionGasFuel"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "earth",
+      "EFL",
+      2025,
+      "FusionGasFuel"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "earth",
+      "EFL",
+      2025,
+      "FusionGasFuel"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "earth",
+      "EFL",
+      2025,
+      "FusionGasFuel"
+    ]
+  ],
+  "flex_var_annual_rpitvo": [],
+  "curtailment_var_rpsditvo": [
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "HYD",
+      "EH",
+      2025,
+      "ELC"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "HYD",
+      "EH",
+      2025,
+      "ELC"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "HYD",
+      "EH",
+      2025,
+      "ELC"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "HYD",
+      "EH",
+      2025,
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d1",
+      "HYD",
+      "EH",
+      2025,
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "HYD",
+      "EH",
+      2025,
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "HYD",
+      "EH",
+      2025,
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "HYD",
+      "EH",
+      2025,
+      "ELC"
+    ]
+  ],
+  "flow_in_storage_rpsditvo": [
+    [
+      "B",
+      2025,
+      "s1",
+      "d1",
+      "ELC",
+      "batt",
+      2025,
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "ELC",
+      "batt",
+      2025,
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "ELC",
+      "batt",
+      2025,
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "ELC",
+      "batt",
+      2025,
+      "ELC"
+    ]
+  ],
+  "storage_level_rpsdtv": [
+    [
+      "B",
+      2025,
+      "s1",
+      "d1",
+      "batt",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "batt",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "batt",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "batt",
+      2025
+    ]
+  ],
+  "storage_init_rpstv": [
+    [
+      "B",
+      2025,
+      "s1",
+      "batt",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "batt",
+      2025
+    ]
+  ],
+  "seasonal_storage_level_rpstv": [],
+  "capacity_var_rptv": [
+    [
+      "A",
+      2025,
       "EF",
       2025
     ],
     [
       "A",
+      2025,
       "EFL",
       2025
     ],
     [
       "A",
+      2025,
       "EH",
       2025
     ],
     [
       "A",
+      2025,
       "GeoHeater",
       2025
     ],
     [
       "A",
+      2025,
       "GeoThermal",
       2025
     ],
     [
       "A",
+      2025,
       "bulbs",
       2025
     ],
     [
       "A",
+      2025,
       "heater",
       2025
     ],
     [
       "A",
+      2025,
       "well",
       2025
     ],
     [
       "A-B",
+      2025,
       "FGF_pipe",
       2025
     ],
     [
       "B",
+      2025,
       "EF",
       2025
     ],
     [
       "B",
+      2025,
       "EH",
       2025
     ],
     [
       "B",
+      2025,
       "GeoHeater",
       2025
     ],
     [
       "B",
+      2025,
       "GeoThermal",
       2025
     ],
     [
       "B",
+      2025,
       "batt",
       2025
     ],
     [
       "B",
+      2025,
       "bulbs",
       2025
     ],
     [
       "B",
+      2025,
       "heater",
       2025
     ],
     [
       "B",
+      2025,
       "well",
       2025
     ],
     [
       "B-A",
-      "FGF_pipe",
-      2025
-    ]
-  ],
-  "limit_activity_constraint_rpt": [
-    [
-      "A",
       2025,
-      "A_tech_grp_1",
-      "ge"
-    ],
-    [
-      "A",
-      2025,
-      "A_tech_grp_1",
-      "le"
-    ],
-    [
-      "A",
-      2025,
-      "EF",
-      "ge"
-    ],
-    [
-      "A",
-      2025,
-      "EF",
-      "le"
-    ],
-    [
-      "B",
-      2025,
-      "EH",
-      "le"
-    ]
-  ],
-  "limit_activity_share_constraint_rpgg": [],
-  "limit_annual_capacity_factor_constraint_rpto": [],
-  "limit_capacity_constraint_rpt": [
-    [
-      "A",
-      2025,
-      "A_tech_grp_1",
-      "ge"
-    ],
-    [
-      "A",
-      2025,
-      "A_tech_grp_1",
-      "le"
-    ],
-    [
-      "A",
-      2025,
-      "EH",
-      "ge"
-    ],
-    [
-      "A",
-      2025,
-      "EH",
-      "le"
-    ],
-    [
-      "B",
-      2025,
-      "EH",
-      "le"
-    ],
-    [
-      "B",
-      2025,
-      "batt",
-      "ge"
-    ]
-  ],
-  "limit_capacity_share_constraint_rpgg": [],
-  "limit_degrowth_capacity_constraint_rpt": [],
-  "limit_degrowth_new_capacity_constraint_rpt": [],
-  "limit_degrowth_new_capacity_delta_constraint_rpt": [],
-  "limit_emission_constraint_rpe": [
-    [
-      "A",
-      2025,
-      "co2",
-      "le"
-    ]
-  ],
-  "limit_growth_capacity_constraint_rpt": [],
-  "limit_growth_new_capacity_constraint_rpt": [],
-  "limit_growth_new_capacity_delta_constraint_rpt": [],
-  "limit_new_capacity_constraint_rpt": [],
-  "limit_new_capacity_share_constraint_rpgg": [
-    [
-      "A",
-      2025,
-      "RPS_common",
-      "A_tech_grp_1",
-      "ge"
-    ],
-    [
-      "global",
-      2025,
-      "RPS_common",
-      "A_tech_grp_1",
-      "le"
-    ]
-  ],
-  "limit_resource_constraint_rt": [
-    [
-      "B",
-      "EF",
-      "le"
-    ]
-  ],
-  "limit_seasonal_capacity_factor_constraint_rpst": [],
-  "limit_storage_fraction_constraint_rpsdtv": [],
-  "limit_tech_input_split_annual_constraint_rpitv": [],
-  "limit_tech_input_split_average_constraint_rpitv": [],
-  "limit_tech_input_split_constraint_rpsditv": [
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "HYD",
-      "EH",
-      2025,
-      "ge"
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "HYD",
-      "EH",
-      2025,
-      "ge"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "HYD",
-      "EH",
-      2025,
-      "ge"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "HYD",
-      "EH",
-      2025,
-      "ge"
-    ]
-  ],
-  "limit_tech_output_split_annual_constraint_rptvo": [],
-  "limit_tech_output_split_average_constraint_rptvo": [],
-  "limit_tech_output_split_constraint_rpsdtvo": [
-    [
-      "B",
-      2025,
-      "s1",
-      "d1",
-      "EH",
-      2025,
-      "ELC",
-      "ge"
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "EH",
-      2025,
-      "ELC",
-      "ge"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "EH",
-      2025,
-      "ELC",
-      "ge"
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "EH",
-      2025,
-      "ELC",
-      "ge"
-    ]
-  ],
-  "linked_emissions_tech_constraint_rpsdtve": [
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "EF",
-      2025,
-      "FusionGas"
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "EF",
-      2025,
-      "FusionGas"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "EF",
-      2025,
-      "FusionGas"
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "EF",
-      2025,
-      "FusionGas"
-    ]
-  ],
-  "loan_lifetime_process_rtv": [
-    [
-      "A",
-      "EF",
-      2025
-    ],
-    [
-      "A",
-      "EFL",
-      2025
-    ],
-    [
-      "A",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "A",
-      "GeoThermal",
-      2025
-    ],
-    [
-      "A",
-      "bulbs",
-      2025
-    ],
-    [
-      "A",
-      "heater",
-      2025
-    ],
-    [
-      "A",
-      "well",
-      2025
-    ],
-    [
-      "A-B",
-      "FGF_pipe",
-      2025
-    ],
-    [
-      "B",
-      "EF",
-      2025
-    ],
-    [
-      "B",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      "GeoHeater",
-      2025
-    ],
-    [
-      "B",
-      "GeoThermal",
-      2025
-    ],
-    [
-      "B",
-      "batt",
-      2025
-    ],
-    [
-      "B",
-      "bulbs",
-      2025
-    ],
-    [
-      "B",
-      "heater",
-      2025
-    ],
-    [
-      "B",
-      "well",
-      2025
-    ],
-    [
-      "B-A",
       "FGF_pipe",
       2025
     ]
@@ -3575,98 +3304,103 @@
       2025
     ]
   ],
-  "operator": [
-    "e",
-    "ge",
-    "le"
-  ],
-  "ordered_season_sequential": [
-    [
-      2025,
-      "s1",
-      "s1"
-    ],
-    [
-      2025,
-      "s2",
-      "s2"
-    ]
-  ],
-  "process_life_frac_rptv": [
+  "retired_capacity_var_rptv": [],
+  "annual_retirement_var_rptv": [],
+  "capacity_available_var_rpt": [
     [
       "A",
       2025,
-      "EF",
-      2025
+      "EF"
     ],
     [
       "A",
       2025,
-      "EFL",
-      2025
+      "EFL"
     ],
     [
       "A",
       2025,
-      "EH",
-      2025
+      "EH"
     ],
     [
       "A",
       2025,
-      "GeoHeater",
-      2025
+      "GeoHeater"
     ],
     [
       "A",
       2025,
-      "GeoThermal",
-      2025
+      "GeoThermal"
     ],
     [
       "A",
       2025,
-      "bulbs",
-      2025
+      "bulbs"
     ],
     [
       "A",
       2025,
-      "heater",
-      2025
+      "heater"
     ],
     [
       "A",
       2025,
-      "well",
-      2025
+      "well"
     ],
     [
       "A-B",
       2025,
-      "FGF_pipe",
-      2025
+      "FGF_pipe"
     ],
     [
       "B",
       2025,
-      "EF",
-      2025
+      "EF"
     ],
     [
       "B",
       2025,
-      "EH",
-      2025
+      "EH"
     ],
     [
       "B",
       2025,
-      "GeoHeater",
-      2025
+      "GeoHeater"
     ],
     [
       "B",
+      2025,
+      "GeoThermal"
+    ],
+    [
+      "B",
+      2025,
+      "batt"
+    ],
+    [
+      "B",
+      2025,
+      "bulbs"
+    ],
+    [
+      "B",
+      2025,
+      "heater"
+    ],
+    [
+      "B",
+      2025,
+      "well"
+    ],
+    [
+      "B-A",
+      2025,
+      "FGF_pipe"
+    ]
+  ],
+  "capacity_annual_constraint_rptv": [
+    [
+      "A",
       2025,
       "GeoThermal",
       2025
@@ -3674,131 +3408,430 @@
     [
       "B",
       2025,
-      "batt",
+      "GeoThermal",
+      2025
+    ]
+  ],
+  "demand_constraint_rpsd_dem": [
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "RH"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "RL"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "RH"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "RL"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "RH"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "RL"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "RH"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "RL"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d1",
+      "RH"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d1",
+      "RL"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "RH"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "RL"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "RH"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "RL"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "RH"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "RL"
+    ]
+  ],
+  "commodity_balance_constraint_rpsdc": [
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "ELC"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "FusionGasFuel"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "GeoHyd"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "HYD"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "ELC"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "FusionGasFuel"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "GeoHyd"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "HYD"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "ELC"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "FusionGasFuel"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "GeoHyd"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "HYD"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "ELC"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "FusionGasFuel"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "GeoHyd"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "HYD"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d1",
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d1",
+      "FusionGasFuel"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d1",
+      "GeoHyd"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d1",
+      "HYD"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "FusionGasFuel"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "GeoHyd"
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
+      "HYD"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "FusionGasFuel"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "GeoHyd"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d1",
+      "HYD"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "ELC"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "FusionGasFuel"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "GeoHyd"
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "HYD"
+    ]
+  ],
+  "annual_commodity_balance_constraint_rpc": [],
+  "baseload_diurnal_constraint_rpsdtv": [
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "EH",
       2025
     ],
     [
       "B",
       2025,
-      "bulbs",
+      "s1",
+      "d1",
+      "EH",
       2025
     ],
     [
       "B",
       2025,
-      "heater",
+      "s1",
+      "d2",
+      "EH",
       2025
     ],
     [
       "B",
       2025,
-      "well",
+      "s2",
+      "d1",
+      "EH",
       2025
     ],
     [
-      "B-A",
+      "B",
+      2025,
+      "s2",
+      "d2",
+      "EH",
+      2025
+    ]
+  ],
+  "regional_exchange_capacity_constraint_rrptv": [
+    [
+      "A",
+      "B",
       2025,
       "FGF_pipe",
       2025
-    ]
-  ],
-  "ramp_down_day_constraint_rpsdtv": [
-    [
-      "A",
-      2025,
-      "s1",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s1",
-      "d2",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "d2",
-      "EH",
-      2025
     ],
     [
       "B",
-      2025,
-      "s1",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "d2",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d1",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "d2",
-      "EH",
-      2025
-    ]
-  ],
-  "ramp_down_season_constraint_rpsstv": [
-    [
       "A",
       2025,
-      "s1",
-      "s2",
-      "EH",
-      2025
-    ],
-    [
-      "A",
-      2025,
-      "s2",
-      "s1",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s1",
-      "s2",
-      "EH",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "s1",
-      "EH",
+      "FGF_pipe",
       2025
     ]
   ],
@@ -3868,12 +3901,20 @@
       2025
     ]
   ],
-  "ramp_up_season_constraint_rpsstv": [
+  "ramp_down_day_constraint_rpsdtv": [
     [
       "A",
       2025,
       "s1",
-      "s2",
+      "d1",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
       "EH",
       2025
     ],
@@ -3881,7 +3922,15 @@
       "A",
       2025,
       "s2",
-      "s1",
+      "d1",
+      "EH",
+      2025
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
       "EH",
       2025
     ],
@@ -3889,7 +3938,15 @@
       "B",
       2025,
       "s1",
-      "s2",
+      "d1",
+      "EH",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s1",
+      "d2",
       "EH",
       2025
     ],
@@ -3897,52 +3954,21 @@
       "B",
       2025,
       "s2",
-      "s1",
+      "d1",
+      "EH",
+      2025
+    ],
+    [
+      "B",
+      2025,
+      "s2",
+      "d2",
       "EH",
       2025
     ]
   ],
-  "regional_exchange_capacity_constraint_rrptv": [
-    [
-      "A",
-      "B",
-      2025,
-      "FGF_pipe",
-      2025
-    ],
-    [
-      "B",
-      "A",
-      2025,
-      "FGF_pipe",
-      2025
-    ]
-  ],
-  "regional_global_indices": [
-    "A",
-    "B",
-    "global"
-  ],
-  "regional_indices": [
-    "A",
-    "A-B",
-    "B",
-    "B-A"
-  ],
-  "regions": [
-    "A",
-    "B"
-  ],
-  "renewable_portfolio_standard_constraint_rpg": [
-    [
-      "B",
-      2025,
-      "RPS_common"
-    ]
-  ],
-  "reserve_margin_method": [
-    "static"
-  ],
+  "ramp_up_season_constraint_rpsstv": [],
+  "ramp_down_season_constraint_rpsstv": [],
   "reserve_margin_rpsd": [
     [
       "A",
@@ -3969,228 +3995,136 @@
       "d2"
     ]
   ],
-  "retired_capacity_var_rptv": [],
-  "seasonal_storage_constraints_rpsdtv": [],
-  "seasonal_storage_level_rpstv": [],
-  "storage_constraints_rpsdtv": [
+  "limit_growth_capacity_constraint_rpt": [],
+  "limit_degrowth_capacity_constraint_rpt": [],
+  "limit_growth_new_capacity_constraint_rpt": [],
+  "limit_degrowth_new_capacity_constraint_rpt": [],
+  "limit_growth_new_capacity_delta_constraint_rpt": [],
+  "limit_degrowth_new_capacity_delta_constraint_rpt": [],
+  "limit_tech_input_split_constraint_rpsditv": [
     [
-      "B",
+      "A",
       2025,
       "s1",
       "d1",
-      "batt",
-      2025
+      "HYD",
+      "EH",
+      2025,
+      "ge"
     ],
     [
-      "B",
+      "A",
       2025,
       "s1",
       "d2",
-      "batt",
-      2025
+      "HYD",
+      "EH",
+      2025,
+      "ge"
     ],
     [
-      "B",
+      "A",
       2025,
       "s2",
       "d1",
-      "batt",
-      2025
+      "HYD",
+      "EH",
+      2025,
+      "ge"
     ],
     [
-      "B",
+      "A",
       2025,
       "s2",
       "d2",
-      "batt",
-      2025
+      "HYD",
+      "EH",
+      2025,
+      "ge"
     ]
   ],
-  "storage_init_rpstv": [
-    [
-      "B",
-      2025,
-      "s1",
-      "batt",
-      2025
-    ],
-    [
-      "B",
-      2025,
-      "s2",
-      "batt",
-      2025
-    ]
-  ],
-  "storage_level_rpsdtv": [
+  "limit_tech_input_split_annual_constraint_rpitv": [],
+  "limit_tech_input_split_average_constraint_rpitv": [],
+  "limit_tech_output_split_constraint_rpsdtvo": [
     [
       "B",
       2025,
       "s1",
       "d1",
-      "batt",
-      2025
+      "EH",
+      2025,
+      "ELC",
+      "ge"
     ],
     [
       "B",
       2025,
       "s1",
       "d2",
-      "batt",
-      2025
+      "EH",
+      2025,
+      "ELC",
+      "ge"
     ],
     [
       "B",
       2025,
       "s2",
       "d1",
-      "batt",
-      2025
+      "EH",
+      2025,
+      "ELC",
+      "ge"
     ],
     [
       "B",
       2025,
       "s2",
       "d2",
-      "batt",
-      2025
+      "EH",
+      2025,
+      "ELC",
+      "ge"
     ]
   ],
-  "tech_all": [
-    "EF",
-    "EFL",
-    "EH",
-    "FGF_pipe",
-    "GeoHeater",
-    "GeoThermal",
-    "batt",
-    "bulbs",
-    "heater",
-    "well"
-  ],
-  "tech_annual": [
-    "GeoThermal"
-  ],
-  "tech_baseload": [
-    "EH"
-  ],
-  "tech_curtailment": [
-    "EH"
-  ],
-  "tech_demand": [
-    "GeoHeater",
-    "bulbs",
-    "heater"
-  ],
-  "tech_downramping": [
-    "EH"
-  ],
-  "tech_exchange": [
-    "FGF_pipe"
-  ],
-  "tech_exist": [
-    "EH"
-  ],
-  "tech_flex": [
-    "EFL"
-  ],
-  "tech_group_members": [
-    "A_tech_grp_1",
-    "RPS_common"
-  ],
-  "tech_group_names": [
-    "A_tech_grp_1",
-    "RPS_common"
-  ],
-  "tech_or_group": [
-    "A_tech_grp_1",
-    "EF",
-    "EFL",
-    "EH",
-    "FGF_pipe",
-    "GeoHeater",
-    "GeoThermal",
-    "RPS_common",
-    "batt",
-    "bulbs",
-    "heater",
-    "well"
-  ],
-  "tech_production": [
-    "EF",
-    "EFL",
-    "EH",
-    "FGF_pipe",
-    "GeoHeater",
-    "GeoThermal",
-    "batt",
-    "bulbs",
-    "heater",
-    "well"
-  ],
-  "tech_reserve": [
-    "EF"
-  ],
-  "tech_retirement": [
-    "EH"
-  ],
-  "tech_seasonal_storage": [],
-  "tech_storage": [
-    "batt"
-  ],
-  "tech_uncap": [],
-  "tech_upramping": [
-    "EH"
-  ],
-  "tech_with_capacity": [
-    "EF",
-    "EFL",
-    "EH",
-    "FGF_pipe",
-    "GeoHeater",
-    "GeoThermal",
-    "batt",
-    "bulbs",
-    "heater",
-    "well"
-  ],
-  "time_exist": [
-    2020
-  ],
-  "time_future": [
-    2025,
-    2030
-  ],
-  "time_manual": [],
-  "time_of_day": [
-    "d1",
-    "d2"
-  ],
-  "time_optimize": [
-    2025
-  ],
-  "time_season": [
-    2025
-  ],
-  "time_season_all": [
-    "s1",
-    "s2"
-  ],
-  "time_season_to_sequential": [
-    "s1",
-    "s2"
-  ],
-  "time_sequencing": [
-    "seasonal_timeslices"
-  ],
-  "vintage_all": [
-    2020,
-    2025
-  ],
-  "vintage_exist": [
-    2020
-  ],
-  "vintage_optimize": [
-    2025
+  "limit_tech_output_split_annual_constraint_rptvo": [],
+  "limit_tech_output_split_average_constraint_rptvo": [],
+  "linked_emissions_tech_constraint_rpsdtve": [
+    [
+      "A",
+      2025,
+      "s1",
+      "d1",
+      "EF",
+      2025,
+      "FusionGas"
+    ],
+    [
+      "A",
+      2025,
+      "s1",
+      "d2",
+      "EF",
+      2025,
+      "FusionGas"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d1",
+      "EF",
+      2025,
+      "FusionGas"
+    ],
+    [
+      "A",
+      2025,
+      "s2",
+      "d2",
+      "EF",
+      2025,
+      "FusionGas"
+    ]
   ]
 }

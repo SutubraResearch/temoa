@@ -604,57 +604,11 @@ def migrate(source: Path, schema: Path, target: Path, days_per_period: int | Non
     #       (import_coal) tech names using wildcards.
     # =========================================================================
 
-    print('Setting unlimited capacity flags...')
-
-    # Set unlim_cap = 1 for target technologies
-    # Patterns use wildcards to match both:
-    #   - Non-prefixed: "import_naturalgas", "elec_distribution"
-    #   - Region-prefixed: "TRE_import_naturalgas", "TRE_elec_distribution"
-    conn.execute(
-        """
-        UPDATE technology
-        SET unlim_cap = 1
-        WHERE (
-            -- import_* or <REGION>_import_* (but NOT water_import_*)
-            (tech LIKE 'import_%' OR tech LIKE '%_import_%')
-            -- elec_distribution or <REGION>_elec_distribution
-            OR tech LIKE '%elec_distribution'
-            -- unserved_load or <REGION>_unserved_load
-            OR tech LIKE '%unserved_load'
-            -- CO2_Offset or <REGION>_CO2_Offset
-            OR tech LIKE '%CO2_Offset'
-            -- Dummy_Offset or <REGION>_Dummy_Offset
-            OR tech LIKE '%Dummy_Offset'
-        )
-        AND tech NOT LIKE 'water_import_%'
-        AND tech NOT LIKE '%_water_import_%'
-        """
-    )
-
-    # tech_uncap and tech_reserve cannot overlap - fix any conflicts
-    conn.execute(
-        """
-        UPDATE technology
-        SET reserve = 0
-        WHERE unlim_cap = 1 AND reserve = 1
-        """
-    )
-
-    # Remove unlimited capacity techs from existing_capacity
-    conn.execute(
-        """
-        DELETE FROM existing_capacity
-        WHERE tech IN (SELECT tech FROM technology WHERE unlim_cap = 1)
-        """
-    )
-
-    # Report what was set
-    unlim_techs = conn.execute(
-        'SELECT tech FROM technology WHERE unlim_cap = 1 ORDER BY tech'
-    ).fetchall()
-    print(f'  Set unlim_cap = 1 for {len(unlim_techs)} technologies:')
-    for (tech,) in unlim_techs:
-        print(f'    - {tech}')
+    # DB-only approach: do NOT set unlim_cap = 1 for import/distribution/unserved
+    # techs.  Instead, keep them as normal existing techs with high existing_capacity
+    # (matching mip-dev).  This preserves capacity constraints that act as separator
+    # nodes in the constraint graph, improving barrier factorization performance.
+    print('Skipping unlim_cap flags (DB-only approach, matching mip-dev)...')
 
     # =========================================================================
     # TECHNOLOGY FLAG CORRECTIONS
@@ -725,36 +679,8 @@ def migrate(source: Path, schema: Path, target: Path, days_per_period: int | Non
         )
     print(f'  Deleted {cc_to_delete} capacity_credit rows for non-reserve techs')
 
-    # unlim_cap techs cannot have investment/fixed costs.
-    ci_to_delete = conn.execute(
-        """
-        SELECT COUNT(*) FROM cost_invest
-        WHERE tech IN (SELECT tech FROM technology WHERE unlim_cap = 1)
-        """
-    ).fetchone()[0]
-    if ci_to_delete:
-        conn.execute(
-            """
-            DELETE FROM cost_invest
-            WHERE tech IN (SELECT tech FROM technology WHERE unlim_cap = 1)
-            """
-        )
-    print(f'  Deleted {ci_to_delete} cost_invest rows for unlim_cap techs')
-
-    cf_to_delete = conn.execute(
-        """
-        SELECT COUNT(*) FROM cost_fixed
-        WHERE tech IN (SELECT tech FROM technology WHERE unlim_cap = 1)
-        """
-    ).fetchone()[0]
-    if cf_to_delete:
-        conn.execute(
-            """
-            DELETE FROM cost_fixed
-            WHERE tech IN (SELECT tech FROM technology WHERE unlim_cap = 1)
-            """
-        )
-    print(f'  Deleted {cf_to_delete} cost_fixed rows for unlim_cap techs')
+    # (No cost_invest/cost_fixed cleanup needed — import/distribution techs
+    # naturally have no investment or fixed cost data in the source DB.)
 
     # Remove orphan commodities (unused physical carriers).
     orphan_comm_query = """

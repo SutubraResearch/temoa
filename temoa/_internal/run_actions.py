@@ -227,8 +227,9 @@ def solve_instance(
         optimizer.options['BarConvTol'] = 1.0e-3
         optimizer.options['FeasibilityTol'] = 1.0e-4
 
-        # Barrier ordering: env TEMOA_BAR_ORDER overrides default (0=AMD, -1=auto/ND, 1=ND+AMD)
-        bar_order = int(os.environ.get('TEMOA_BAR_ORDER', '0'))
+        # Barrier ordering: env TEMOA_BAR_ORDER overrides default (-1=auto, 0=AMD, 1=ND+AMD)
+        # Auto ordering (-1) is 2-4x faster than AMD on national-scale models.
+        bar_order = int(os.environ.get('TEMOA_BAR_ORDER', '-1'))
         optimizer.options['BarOrder'] = bar_order
         logger.info('Gurobi BarOrder=%d', bar_order)
 
@@ -243,6 +244,13 @@ def solve_instance(
         if bar_homogeneous is not None:
             optimizer.options['BarHomogeneous'] = int(bar_homogeneous)
             logger.info('Gurobi BarHomogeneous=%s', bar_homogeneous)
+
+        # Optional: conservative presolve (TEMOA_PRESOLVE=1)
+        # Preserves more variables through presolve, improving barrier structure
+        presolve_level = os.environ.get('TEMOA_PRESOLVE')
+        if presolve_level is not None:
+            optimizer.options['Presolve'] = int(presolve_level)
+            logger.info('Gurobi Presolve=%s', presolve_level)
 
     elif solver_name == 'appsi_highs':
         pass
