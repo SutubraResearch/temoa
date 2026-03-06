@@ -180,25 +180,57 @@ def clean_technologies(conn: sqlite3.Connection) -> None:
 
 
 def clean_groups(conn: sqlite3.Connection) -> None:
-    """Remove orphan group memberships and empty groups."""
+    """Remove orphan group memberships (techs no longer in the technology table)
+    and then empty groups. Preserves all valid group data including RPS/CES."""
     print('\n--- Step 4: Clean groups ---')
 
-    group_tables = [
-        'MinActivityGroup',
-        'MinCapacityGroup',
-        'MaxActivityGroup',
-        'MaxCapacityGroup',
-        'tech_groups',
-        'groups',
-    ]
+    # Remove tech_groups memberships for techs that were deleted in earlier steps
+    try:
+        cur = conn.execute(
+            """
+            DELETE FROM tech_groups
+            WHERE tech NOT IN (SELECT tech FROM technologies)
+            """
+        )
+        if cur.rowcount > 0:
+            print(f'  tech_groups: deleted {cur.rowcount} orphan membership rows')
+    except sqlite3.OperationalError:
+        pass
 
-    for table in group_tables:
+    # Remove groups that no longer have any members
+    try:
+        cur = conn.execute(
+            """
+            DELETE FROM groups
+            WHERE group_name NOT IN (SELECT DISTINCT group_name FROM tech_groups)
+            """
+        )
+        if cur.rowcount > 0:
+            print(f'  groups: deleted {cur.rowcount} empty group rows')
+    except sqlite3.OperationalError:
+        pass
+
+    # Remove MinActivityGroup/MaxActivityGroup etc. entries for deleted groups
+    for table in ['MinActivityGroup', 'MaxActivityGroup', 'MinCapacityGroup', 'MaxCapacityGroup']:
         try:
-            cur = conn.execute(f'DELETE FROM "{table}"')
+            cur = conn.execute(
+                f"""
+                DELETE FROM "{table}"
+                WHERE group_name NOT IN (SELECT group_name FROM groups)
+                """
+            )
             if cur.rowcount > 0:
-                print(f'  {table}: deleted {cur.rowcount} rows')
+                print(f'  {table}: deleted {cur.rowcount} rows for removed groups')
         except sqlite3.OperationalError:
             pass
+
+    # Report what's preserved
+    try:
+        remaining = conn.execute('SELECT COUNT(*) FROM tech_groups').fetchone()[0]
+        groups = conn.execute('SELECT COUNT(*) FROM groups').fetchone()[0]
+        print(f'  Preserved {remaining} tech_groups memberships across {groups} groups')
+    except sqlite3.OperationalError:
+        pass
 
     conn.commit()
 

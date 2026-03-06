@@ -655,6 +655,13 @@ def migrate(source: Path, schema: Path, target: Path, days_per_period: int | Non
     if dg_fixed:
         print(f'  Set reserve = 0 for distributed gen techs: {[t[0] for t in dg_fixed]}')
 
+    # elec_distribution is a pass-through, not a reserve tech
+    conn.execute(
+        """
+        UPDATE technology SET reserve = 0 WHERE tech LIKE '%elec_distribution%'
+        """
+    )
+
     # =========================================================================
     # POST-MIGRATION CLEANUP (for region-extracted source DBs)
     # =========================================================================
