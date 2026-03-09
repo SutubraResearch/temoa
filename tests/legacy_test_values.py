@@ -45,8 +45,8 @@ test_vals = {
         ExpectedVals.EFF_DOMAIN_SIZE: 2800,
         ExpectedVals.EFF_INDEX_SIZE: 18,
         # reduced 2026/02 after reverting demand to timeslice level
-        # -8 in 2026/03: disable season ramp for seasonal_timeslices (matches mip-dev)
-        ExpectedVals.CONSTR_COUNT: 220,
+        # +8 re-enabled season ramp for seasonal_timeslices regression test
+        ExpectedVals.CONSTR_COUNT: 228,
         # +2 in 2026/03: v_storage_init added to break storage cycle → chain topology
         ExpectedVals.VAR_COUNT: 142,
     },
