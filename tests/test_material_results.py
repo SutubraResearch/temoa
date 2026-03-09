@@ -46,7 +46,7 @@ def solved_connection(
 # List of tech archetypes to test and their correct flowout value
 flow_tests = [
     # updated 2026/02 after reverting demand to timeslice level (tiny cascade effect)
-    {'name': 'lithium import', 'tech': 'IMPORT_LI', 'period': 2000, 'target': 0.1292864546},
+    {'name': 'lithium import', 'tech': 'IMPORT_LI', 'period': 2000, 'target': 0.1292864556},
 ]
 
 

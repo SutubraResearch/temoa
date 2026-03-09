@@ -25,8 +25,7 @@ test_vals = {
         # reduced 2026/02 after reverting demand to timeslice level (removed DemandActivity,
         # demand techs no longer get v_flow_out_annual — fixes barrier factorization perf)
         ExpectedVals.CONSTR_COUNT: 2414,
-        # +48 in 2026/03: v_storage_init added to break storage cycle → chain topology
-        ExpectedVals.VAR_COUNT: 1948,
+        ExpectedVals.VAR_COUNT: 1900,
     },
     'utopia': {
         # reduced 2026/02 after reverting demand to timeslice level — model now has more
@@ -37,8 +36,7 @@ test_vals = {
         ExpectedVals.EFF_INDEX_SIZE: 64,
         # reduced 2026/02 after reverting demand to timeslice level
         ExpectedVals.CONSTR_COUNT: 1291,
-        # +27 in 2026/03: v_storage_init added to break storage cycle → chain topology
-        ExpectedVals.VAR_COUNT: 1082,
+        ExpectedVals.VAR_COUNT: 1055,
     },
     'mediumville': {
         ExpectedVals.OBJ_VALUE: 7035.7275,
@@ -47,19 +45,15 @@ test_vals = {
         # reduced 2026/02 after reverting demand to timeslice level
         # -8 in 2026/03: disable season ramp for seasonal_timeslices (matches mip-dev)
         ExpectedVals.CONSTR_COUNT: 220,
-        # +2 in 2026/03: v_storage_init added to break storage cycle → chain topology
-        ExpectedVals.VAR_COUNT: 142,
+        ExpectedVals.VAR_COUNT: 140,
     },
     'seasonal_storage': {
-        # updated 2026/03: v_storage_init changes chain topology, HiGHS takes a slightly
-        # different path (0.0012% change — numerical noise, not a model change)
-        ExpectedVals.OBJ_VALUE: 76661.9476,
+        ExpectedVals.OBJ_VALUE: 76661.0231,
         ExpectedVals.EFF_DOMAIN_SIZE: 24,
         ExpectedVals.EFF_INDEX_SIZE: 4,
         # reduced 2026/02 after reverting demand to timeslice level
         ExpectedVals.CONSTR_COUNT: 182,
-        # +2 in 2026/03: v_storage_init added to break storage cycle → chain topology
-        ExpectedVals.VAR_COUNT: 92,
+        ExpectedVals.VAR_COUNT: 90,
     },
     'survival_curve': {
         ExpectedVals.OBJ_VALUE: 31.9423,
