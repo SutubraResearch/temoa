@@ -135,18 +135,13 @@ def create_commodity_balance_and_flow_sets(model: TemoaModel) -> None:
     }
 
     # 3. Active Flow Indices (Annual)
-    # Only true tech_annual techs get annual flow variables.
-    # Demand techs use timeslice-level v_flow_out only (matching mip-dev formulation).
-    # Giving demand techs BOTH annual and timeslice variables creates dense columns
-    # in the constraint matrix (each annual var appears in T+1 constraints via
-    # DemandActivity), causing catastrophic barrier factorization slowdown.
     model.active_flow_rpitvo = {
         (r, p, i, t, v, o)
         for r, p, t in model.process_vintages
-        if t in model.tech_annual
         for v in model.process_vintages[r, p, t]
         for i in model.process_inputs.get((r, p, t, v), set())
         for o in model.process_outputs_by_input.get((r, p, t, v, i), set())
+        if t in model.tech_annual or (t in model.tech_demand and o in model.commodity_demand)
     }
 
     # 4. Active Flexible Technology Flow Indices
