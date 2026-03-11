@@ -175,6 +175,19 @@ def storage_energy_constraint(
     return expr
 
 
+def storage_level_at_last_tod_constraint(
+    model: TemoaModel, r: Region, p: Period, s: Season, t: Technology, v: Vintage
+) -> ExprLike:
+    """Tie v_storage_level at d_last to v_storage_init for non-seasonal storage.
+
+    The open-chain storage_energy_constraint wraps d_last back to v_storage_init,
+    but v_storage_level[d_last] is not directly set by the chain. This constraint
+    anchors it so that it represents the same physical state as v_storage_init.
+    """
+    d_last = model.time_of_day.last()
+    return model.v_storage_level[r, p, s, d_last, t, v] == model.v_storage_init[r, p, s, t, v]
+
+
 def seasonal_storage_energy_constraint(
     model: TemoaModel, r: Region, p: Period, s_seq: Season, t: Technology, v: Vintage
 ) -> ExprLike:

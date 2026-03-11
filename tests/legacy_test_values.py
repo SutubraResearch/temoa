@@ -23,7 +23,8 @@ test_vals = {
         ExpectedVals.EFF_DOMAIN_SIZE: 30720,
         ExpectedVals.EFF_INDEX_SIZE: 74,
         # +420 in 2026/03: restored DemandActivity with reference-timeslice formulation
-        ExpectedVals.CONSTR_COUNT: 2834,
+        # +48 in 2026/03: storage_level_last_tod ties v_storage_level[d_last] to v_storage_init
+        ExpectedVals.CONSTR_COUNT: 2882,
         # +48 in 2026/03: v_storage_init added to break storage cycle → chain topology
         ExpectedVals.VAR_COUNT: 1948,
     },
@@ -35,7 +36,8 @@ test_vals = {
         ExpectedVals.EFF_INDEX_SIZE: 64,
         # +180 in 2026/03: restored DemandActivity with reference-timeslice formulation
         # (auto-skipped for single-tech demands like RL)
-        ExpectedVals.CONSTR_COUNT: 1471,
+        # +27 in 2026/03: storage_level_last_tod ties v_storage_level[d_last] to v_storage_init
+        ExpectedVals.CONSTR_COUNT: 1498,
         # +27 in 2026/03: v_storage_init added to break storage cycle → chain topology
         ExpectedVals.VAR_COUNT: 1082,
     },
@@ -44,7 +46,8 @@ test_vals = {
         ExpectedVals.EFF_DOMAIN_SIZE: 2800,
         ExpectedVals.EFF_INDEX_SIZE: 18,
         # +12 in 2026/03: restored DemandActivity with reference-timeslice formulation
-        ExpectedVals.CONSTR_COUNT: 232,
+        # +2 in 2026/03: storage_level_last_tod ties v_storage_level[d_last] to v_storage_init
+        ExpectedVals.CONSTR_COUNT: 234,
         # +2 in 2026/03: v_storage_init added to break storage cycle → chain topology
         ExpectedVals.VAR_COUNT: 142,
     },
@@ -55,7 +58,8 @@ test_vals = {
         ExpectedVals.EFF_DOMAIN_SIZE: 24,
         ExpectedVals.EFF_INDEX_SIZE: 4,
         # reduced 2026/02 after reverting demand to timeslice level
-        ExpectedVals.CONSTR_COUNT: 182,
+        # +2 in 2026/03: storage_level_last_tod ties v_storage_level[d_last] to v_storage_init
+        ExpectedVals.CONSTR_COUNT: 184,
         # +2 in 2026/03: v_storage_init added to break storage cycle → chain topology
         ExpectedVals.VAR_COUNT: 92,
     },

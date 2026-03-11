@@ -920,6 +920,10 @@ class TemoaModel(AbstractModel):
             self.storage_constraints_rpsdtv, rule=storage.storage_energy_constraint
         )
 
+        self.storage_level_last_tod_constraint = Constraint(
+            self.storage_init_rpstv, rule=storage.storage_level_at_last_tod_constraint
+        )
+
         self.storage_energy_upper_bound_constraint = Constraint(
             self.storage_constraints_rpsdtv, rule=storage.storage_energy_upper_bound_constraint
         )
