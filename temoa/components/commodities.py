@@ -20,7 +20,7 @@ from pyomo.environ import value
 
 if TYPE_CHECKING:
     from temoa.core.model import TemoaModel
-    from temoa.types.core_types import Season, TimeOfDay
+    from temoa.types.core_types import Season, Technology, TimeOfDay, Vintage
 
     from ..types import Commodity, ExprLike, Period, Region
 
@@ -113,6 +113,59 @@ def demand_constraint_indices(
     }
 
 
+def demand_activity_constraint_indices(
+    model: TemoaModel,
+) -> set[tuple[Region, Period, Season, TimeOfDay, Technology, Vintage, Commodity]]:
+    r"""Index set for DemandActivity constraint.
+
+    Enforces proportional dispatch: each non-annual tech's output ratio across
+    timeslices must match the demand-specific distribution.  Uses a reference
+    timeslice (first with non-zero DSD) per (r, p, dem).
+
+    Skipped when only 1 non-annual tech serves the demand (trivially satisfied
+    by the timeslice demand constraint alone).
+    """
+    # Cache reference timeslice per (r, p, dem) for use in constraint rule
+    model._dac_reference: dict[tuple, tuple] = {}
+
+    indices: set[tuple[Region, Period, Season, TimeOfDay, Technology, Vintage, Commodity]] = set()
+    for r, p, dem in model.demand_constraint_rpc:
+        # Collect non-annual (t, v) pairs that serve this demand
+        non_annual = [
+            (t, v)
+            for t, v in model.commodity_up_stream_process[r, p, dem]
+            if t not in model.tech_annual
+        ]
+        # Skip if only 1 distinct tech — proportional dispatch trivially satisfied
+        # by the timeslice demand constraint (sum must match DSD regardless of vintages)
+        distinct_techs = {t for t, v in non_annual}
+        if len(distinct_techs) <= 1:
+            continue
+
+        # Find reference timeslice (first with DSD > 0)
+        s_ref, d_ref = None, None
+        for s in model.time_season[p]:
+            for d in model.time_of_day:
+                if value(model.demand_specific_distribution[r, p, s, d, dem]) > 0:
+                    s_ref, d_ref = s, d
+                    break
+            if s_ref is not None:
+                break
+        if s_ref is None:
+            continue  # no non-zero DSD — shouldn't happen for valid data
+
+        model._dac_reference[r, p, dem] = (s_ref, d_ref)
+
+        for t, v in non_annual:
+            for s in model.time_season[p]:
+                for d in model.time_of_day:
+                    if s == s_ref and d == d_ref:
+                        continue  # skip reference timeslice itself
+                    indices.add((r, p, s, d, t, v, dem))
+
+    return indices
+
+
 def commodity_balance_constraint_indices(
     model: TemoaModel,
 ) -> set[tuple[Region, Period, Season, TimeOfDay, Commodity]]:
@@ -203,6 +256,44 @@ def demand_constraint(
     )
 
     return expr
+
+
+def demand_activity_constraint(
+    model: TemoaModel,
+    r: Region,
+    p: Period,
+    s: Season,
+    d: TimeOfDay,
+    t: Technology,
+    v: Vintage,
+    dem: Commodity,
+) -> ExprLike:
+    r"""Enforce proportional dispatch across timeslices for end-use demands.
+
+    Each non-annual tech's flow ratio must match the demand-specific distribution.
+    Compares each timeslice to a reference (first with non-zero DSD).
+
+    .. math::
+       :label: DemandActivity
+
+       \sum_{I} \textbf{FO}_{r,p,s,d,i,t,v,dem} \cdot DSD_{r,s_0,d_0,dem}
+       = \sum_{I} \textbf{FO}_{r,p,s_0,d_0,i,t,v,dem} \cdot DSD_{r,s,d,dem}
+    """
+    s_ref, d_ref = model._dac_reference[r, p, dem]
+
+    act = sum(
+        model.v_flow_out[r, p, s, d, S_i, t, v, dem]
+        for S_i in model.process_inputs_by_output[r, p, t, v, dem]
+    )
+    act_ref = sum(
+        model.v_flow_out[r, p, s_ref, d_ref, S_i, t, v, dem]
+        for S_i in model.process_inputs_by_output[r, p, t, v, dem]
+    )
+
+    dsd_sd = value(model.demand_specific_distribution[r, p, s, d, dem])
+    dsd_ref = value(model.demand_specific_distribution[r, p, s_ref, d_ref, dem])
+
+    return act * dsd_ref == act_ref * dsd_sd
 
 
 def commodity_balance_constraint(

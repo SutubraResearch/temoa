@@ -872,6 +872,14 @@ class TemoaModel(AbstractModel):
             self.demand_constraint_rpsd_dem, rule=commodities.demand_constraint
         )
 
+        self.demand_activity_constraint_rpsdtv_dem = Set(
+            dimen=7, initialize=commodities.demand_activity_constraint_indices
+        )
+        self.demand_activity_constraint = Constraint(
+            self.demand_activity_constraint_rpsdtv_dem,
+            rule=commodities.demand_activity_constraint,
+        )
+
         self.commodity_balance_constraint_rpsdc = Set(
             dimen=5, initialize=commodities.commodity_balance_constraint_indices
         )
