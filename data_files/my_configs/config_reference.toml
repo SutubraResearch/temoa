@@ -1,7 +1,7 @@
 scenario = "reference"
 scenario_mode = "myopic"
-input_database = "/trace/group/adams/cwade2/temoa_v4/servers/current_policies_noIRA_52_week_retire.sqlite"
-output_database = "/trace/group/adams/cwade2/temoa_v4/servers/current_policies_noIRA_52_week_retire.sqlite"
+input_database = "/trace/group/adams/cwade2/temoa_v4/servers/current_policies_noIRA_52_week_retire_v4.sqlite"
+output_database = "/trace/group/adams/cwade2/temoa_v4/servers/current_policies_noIRA_52_week_retire_v4.sqlite"
 solver_name = "gurobi"
 save_lp_file = false
 save_duals = true
