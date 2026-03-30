@@ -554,7 +554,7 @@ class TableWriter:
 
         map_flow_to_table = {
             FlowType.OUT: 'output_flow_out',
-            FlowType.IN: 'output_flow_in',
+            # FlowType.IN: 'output_flow_in',  # disabled — redundant with flow_out
             FlowType.CURTAIL: 'output_curtailment',
             FlowType.FLEX: 'output_curtailment',
         }
@@ -794,6 +794,7 @@ class TableWriter:
         scenario = self._get_scenario_name(iteration)
         constraint_data = results['Solution'].Constraint.items()
 
+        # Only keep electricity LMPs (commodity_balance_constraint for 'electricity')
         records = [
             {
                 'scenario': scenario,
@@ -801,6 +802,7 @@ class TableWriter:
                 'dual': data['Dual'],
             }
             for name, data in constraint_data
+            if 'commodity_balance_constraint' in name and 'electricity' in name
         ]
         self._bulk_insert('output_dual_variable', records)
         self.connection.commit()
