@@ -12,4 +12,4 @@ source /trace/packages/anaconda3/2023.03-1/etc/profile.d/conda.sh
 conda activate temoa
 
 cd /trace/home/cwade2/code_repos/temoa_github/temoa
-yes | temoa run data_files/my_configs/config_servers.toml
+temoa run --silent data_files/my_configs/config_servers.toml
