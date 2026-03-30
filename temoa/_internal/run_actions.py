@@ -220,6 +220,7 @@ def solve_instance(
         optimizer.options['BarConvTol'] = 1.0e-3
         optimizer.options['FeasibilityTol'] = 1.0e-4
         optimizer.options['BarOrder'] = -1  # auto ordering; 2-4x faster than AMD on large models
+        optimizer.options['LogToConsole'] = 1  # ensure solve progress goes to stdout
 
     elif solver_name == 'appsi_highs':
         pass
