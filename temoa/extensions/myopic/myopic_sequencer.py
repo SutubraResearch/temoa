@@ -149,6 +149,12 @@ class MyopicSequencer:
         if input_file == output_db:
             con = sqlite3.connect(input_file)
             logger.info('Connected to database: %s', input_file)
+            # Performance PRAGMAs for long-running myopic solves on multi-GB databases
+            con.execute('PRAGMA journal_mode = WAL')
+            con.execute('PRAGMA synchronous = NORMAL')
+            con.execute('PRAGMA temp_store = MEMORY')
+            con.execute('PRAGMA mmap_size = 8589934592')  # 8 GB
+            con.execute('PRAGMA cache_size = -512000')  # 500 MB
         else:
             msg = (
                 'Myopic Mode processing only supports a single database (i.e. input_file = '
@@ -303,8 +309,7 @@ class MyopicSequencer:
             )
             self.output_con.commit()
 
-            # 11.  Compact the db...  lots of writes/deletes leads to bloat
-            self.output_con.execute('VACUUM;')
+            # (removed per-period VACUUM — rewrites entire multi-GB file each iteration)
 
         # Total system cost is, theoretically, sum of discounted costs from output_cost table
         total_cost = self.get_current_total_cost(last_base_year if last_base_year is not None else 0)
