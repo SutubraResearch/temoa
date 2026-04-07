@@ -104,7 +104,7 @@ def linked_emissions_tech_constraint(
     """
 
     if t in model.tech_annual:
-        primary_flow = quicksum((
+        primary_flow = quicksum(
             (
                 value(model.demand_specific_distribution[r, p, s, d, S_o])
                 if S_o in model.commodity_demand
@@ -114,14 +114,14 @@ def linked_emissions_tech_constraint(
             * value(model.emission_activity[r, e, S_i, t, v, S_o])
             for S_i in model.process_inputs[r, p, t, v]
             for S_o in model.process_outputs_by_input[r, p, t, v, S_i]
-        ), linear=True)
+        )
     else:
-        primary_flow = quicksum((
+        primary_flow = quicksum(
             model.v_flow_out[r, p, s, d, S_i, t, v, S_o]
             * value(model.emission_activity[r, e, S_i, t, v, S_o])
             for S_i in model.process_inputs[r, p, t, v]
             for S_o in model.process_outputs_by_input[r, p, t, v, S_i]
-        ), linear=True)
+        )
 
     linked_t = value(model.linked_techs[r, t, e])
 
@@ -132,7 +132,7 @@ def linked_emissions_tech_constraint(
     # )
 
     if linked_t in model.tech_annual:
-        linked_flow = quicksum((
+        linked_flow = quicksum(
             (
                 value(model.demand_specific_distribution[r, p, s, d, S_o])
                 if S_o in model.commodity_demand
@@ -141,12 +141,12 @@ def linked_emissions_tech_constraint(
             * model.v_flow_out_annual[r, p, S_i, linked_t, v, S_o]
             for S_i in model.process_inputs[r, p, linked_t, v]
             for S_o in model.process_outputs_by_input[r, p, linked_t, v, S_i]
-        ), linear=True)
+        )
     else:
-        linked_flow = quicksum((
+        linked_flow = quicksum(
             model.v_flow_out[r, p, s, d, S_i, linked_t, v, S_o]
             for S_i in model.process_inputs[r, p, linked_t, v]
             for S_o in model.process_outputs_by_input[r, p, linked_t, v, S_i]
-        ), linear=True)
+        )
 
     return -primary_flow == linked_flow

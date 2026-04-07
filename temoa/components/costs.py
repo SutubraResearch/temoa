@@ -323,7 +323,7 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
     if value(model.myopic_discounting_year) != 0:
         p_0 = value(model.myopic_discounting_year)
 
-    loan_costs = quicksum((
+    loan_costs = quicksum(
         loan_cost(
             model.v_new_capacity[r, S_t, S_v],
             value(model.cost_invest[r, S_t, S_v]),
@@ -337,8 +337,8 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
         )
         for r, S_t, S_v in model.cost_invest.sparse_keys()
         if S_v == p and not model.is_survival_curve_process[r, S_t, S_v]
-    ), linear=True)
-    loan_costs += quicksum((
+    )
+    loan_costs += quicksum(
         loan_cost_survival_curve(
             model,
             r,
@@ -354,9 +354,9 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
         )
         for r, S_t, S_v in model.cost_invest.sparse_keys()
         if S_v == p and model.is_survival_curve_process[r, S_t, S_v]
-    ), linear=True)
+    )
 
-    fixed_costs = quicksum((
+    fixed_costs = quicksum(
         fixed_or_variable_cost(
             model.v_capacity[r, p, S_t, S_v],
             value(model.cost_fixed[r, p, S_t, S_v]),
@@ -367,9 +367,9 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
         )
         for r, S_p, S_t, S_v in model.cost_fixed.sparse_keys()
         if S_p == p
-    ), linear=True)
+    )
 
-    variable_costs = quicksum((
+    variable_costs = quicksum(
         fixed_or_variable_cost(
             model.v_flow_out[r, p, s, d, S_i, S_t, S_v, S_o],
             value(model.cost_variable[r, p, S_t, S_v]),
@@ -384,9 +384,9 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
         for S_o in model.process_outputs_by_input[r, S_p, S_t, S_v, S_i]
         for s in model.time_season
         for d in model.time_of_day
-    ), linear=True)
+    )
 
-    variable_costs_annual = quicksum((
+    variable_costs_annual = quicksum(
         fixed_or_variable_cost(
             model.v_flow_out_annual[r, p, S_i, S_t, S_v, S_o],
             value(model.cost_variable[r, p, S_t, S_v]),
@@ -399,7 +399,7 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
         if S_p == p and S_t in model.tech_annual
         for S_i in model.process_inputs[r, S_p, S_t, S_v]
         for S_o in model.process_outputs_by_input[r, S_p, S_t, S_v, S_i]
-    ), linear=True)
+    )
 
     # The emissions costs occur over the five possible emission sources.
     # to do any/all of them we need 2 baseline sets:  The regular and annual sets
@@ -434,7 +434,7 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
     annual = [(r, p, e, i, t, v, o) for (r, p, e, i, t, v, o) in base if t in model.tech_annual]
 
     # 1. variable emissions
-    var_emissions = quicksum((
+    var_emissions = quicksum(
         fixed_or_variable_cost(
             cap_or_flow=model.v_flow_out[r, p, s, d, i, t, v, o]
             * value(model.emission_activity[r, e, i, t, v, o]),
@@ -445,7 +445,7 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
             p=p,
         )
         for (r, p, e, s, d, i, t, v, o) in normal
-    ), linear=True)
+    )
 
     # 2. flex emissions -- removed (double counting, flex wastes are SUBTRACTIVE from flowout)
 
@@ -453,7 +453,7 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
     # emissions)
 
     # 4. annual emissions
-    var_annual_emissions = quicksum((
+    var_annual_emissions = quicksum(
         fixed_or_variable_cost(
             cap_or_flow=model.v_flow_out_annual[r, p, i, t, v, o]
             * value(model.emission_activity[r, e, i, t, v, o]),
@@ -465,13 +465,13 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
         )
         for (r, p, e, i, t, v, o) in annual
         if t not in model.tech_flex
-    ), linear=True)
+    )
 
     # 5. flex annual emissions -- removed (double counting, flex wastes are SUBTRACTIVE from
     # flowout)
 
     # 6. embodied - treated as a fixed cost distributed over the deployment period (vintage)
-    embodied_emissions = quicksum((
+    embodied_emissions = quicksum(
         fixed_or_variable_cost(
             cap_or_flow=model.v_new_capacity[r, t, v]
             * value(model.emission_embodied[r, e, t, v])
@@ -487,10 +487,10 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
         for (r, e, t, v) in model.emission_embodied.sparse_keys()
         if (r, p, e) in model.cost_emission
         if v == p
-    ), linear=True)
+    )
 
     # 6. endoflife - treated as a fixed cost distributed over the retirement period
-    endoflife_emissions = quicksum((
+    endoflife_emissions = quicksum(
         fixed_or_variable_cost(
             cap_or_flow=model.v_annual_retirement[r, p, t, v]
             * value(model.emission_end_of_life[r, e, t, v]),
@@ -505,7 +505,7 @@ def period_cost_rule(model: TemoaModel, p: int) -> float | Expression:
         for (r, e, t, v) in model.emission_end_of_life.sparse_keys()
         if (r, p, e) in model.cost_emission
         if (r, t, v) in model.retirement_periods and p in model.retirement_periods[r, t, v]
-    ), linear=True)
+    )
 
     period_emission_cost = (
         var_emissions + var_annual_emissions + embodied_emissions + endoflife_emissions
