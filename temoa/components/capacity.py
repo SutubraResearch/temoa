@@ -339,7 +339,7 @@ def annual_retirement_constraint(
         cap_end = 0
     else:
         # Mid-life period, ending capacity is beginning capacity of next period
-        if p == model.time_optimize.last() or eol_year == p_end:
+        if p == model.time_optimize.last() or p_end == eol_year:
             # No v_capacity or v_retired_capacity for next period so just continue down the
             # survival curve. If eol_year = p_end then eol would be dumped in the next period
             cap_end = (
@@ -359,6 +359,11 @@ def annual_retirement_constraint(
             p_next_end = p_next + value(model.period_length[p_next])
             if t in model.tech_retirement and p_next_end < eol_year:
                 cap_end += model.v_retired_capacity[r, p_next, t, v]
+
+    # v_capacity already accounts for decision retirement so need to undo that for beginning cap
+    if t in model.tech_retirement and p_end < eol_year:
+        cap_begin += model.v_retired_capacity[r, p, t, v]
+
 
     annualised_retirement = (cap_begin - cap_end) / value(model.period_length[p])
     return model.v_annual_retirement[r, p, t, v] == annualised_retirement
@@ -576,7 +581,7 @@ def adjusted_capacity_constraint(
     if t in model.tech_retirement:
         early_retirements = sum(
             model.v_retired_capacity[r, S_p, t, v]
-            / value(model.lifetime_survival_curve[r, S_p, t, v])
+            / value(model.lifetime_survival_curve[r, S_p, t, v])  # relative survival since then
             for S_p in model.time_optimize
             if v < S_p <= p
             and S_p < v + value(model.lifetime_process[r, t, v]) - value(model.period_length[S_p])
