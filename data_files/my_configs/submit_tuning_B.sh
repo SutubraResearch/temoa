@@ -6,6 +6,7 @@
 #SBATCH --time=23:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
+#SBATCH --exclusive
 #SBATCH -p adams
 
 source /trace/packages/anaconda3/2023.03-1/etc/profile.d/conda.sh
@@ -18,4 +19,4 @@ export TEMOA_THREADS=16
 export TEMOA_PRE_SPARSIFY=1
 export TEMOA_SCALE_FLAG=2
 
-temoa run --silent data_files/my_configs/config_srv_20.toml
+temoa run --silent data_files/my_configs/config_srv_20_tuneB.toml

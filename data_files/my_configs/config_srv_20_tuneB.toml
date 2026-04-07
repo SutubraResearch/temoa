@@ -1,7 +1,7 @@
 scenario = "srv_20"
 scenario_mode = "myopic"
-input_database = "/trace/group/adams/cwade2/temoa_v4/servers/server_current_policies_noIRA_20week_v4_tuneC.sqlite"
-output_database = "/trace/group/adams/cwade2/temoa_v4/servers/server_current_policies_noIRA_20week_v4_tuneC.sqlite"
+input_database = "/trace/group/adams/cwade2/temoa_v4/servers/server_current_policies_noIRA_20week_v4_tuneB.sqlite"
+output_database = "/trace/group/adams/cwade2/temoa_v4/servers/server_current_policies_noIRA_20week_v4_tuneB.sqlite"
 solver_name = "gurobi"
 save_lp_file = false
 save_duals = true

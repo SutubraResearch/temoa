@@ -6,6 +6,7 @@
 #SBATCH --time=23:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
+#SBATCH --exclusive
 #SBATCH -p adams
 
 source /trace/packages/anaconda3/2023.03-1/etc/profile.d/conda.sh
