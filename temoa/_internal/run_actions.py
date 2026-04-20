@@ -2,6 +2,7 @@
 Basic-level atomic functions that can be used by a sequencer, as needed
 """
 
+import os
 import sqlite3
 from collections.abc import Generator, Iterable
 from contextlib import contextmanager
@@ -220,6 +221,22 @@ def solve_instance(
         optimizer.options['BarConvTol'] = 1.0e-3
         optimizer.options['FeasibilityTol'] = 1.0e-4
         optimizer.options['BarOrder'] = -1  # auto ordering; 2-4x faster than AMD on large models
+        optimizer.options['LogToConsole'] = 1  # ensure solve progress goes to stdout
+
+        # Environment-variable overrides for solver tuning experiments
+        _gurobi_env_opts = {
+            'TEMOA_METHOD': ('Method', int),
+            'TEMOA_THREADS': ('Threads', int),
+            'TEMOA_BAR_ORDER': ('BarOrder', int),
+            'TEMOA_SCALE_FLAG': ('ScaleFlag', int),
+            'TEMOA_PRE_SPARSIFY': ('PreSparsify', int),
+            'TEMOA_BAR_HOMOGENEOUS': ('BarHomogeneous', int),
+        }
+        for env_var, (param, cast) in _gurobi_env_opts.items():
+            val = os.environ.get(env_var)
+            if val is not None:
+                optimizer.options[param] = cast(val)
+                logger.info('Gurobi %s=%s (from %s)', param, val, env_var)
 
     elif solver_name == 'appsi_highs':
         pass
