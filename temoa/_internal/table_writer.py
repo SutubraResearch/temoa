@@ -794,6 +794,7 @@ class TableWriter:
         scenario = self._get_scenario_name(iteration)
         constraint_data = results['Solution'].Constraint.items()
 
+        # Only keep electricity LMPs (commodity_balance_constraint for 'electricity')
         records = [
             {
                 'scenario': scenario,
@@ -801,6 +802,7 @@ class TableWriter:
                 'dual': data['Dual'],
             }
             for name, data in constraint_data
+            if 'commodity_balance_constraint' in name and 'electricity' in name
         ]
         self._bulk_insert('output_dual_variable', records)
         self.connection.commit()
