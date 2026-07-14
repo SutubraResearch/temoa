@@ -10,7 +10,7 @@ authors = [
 ]
 
 dependencies = [
-    "pyomo>=6.8.0",
+    "pyomo>=6.8.0,<6.10",  # 6.10 sparse_keys regression: 45x slower model builds (fork-only pin)
     "matplotlib>=3.9.2",
     "pandas>=2.2.2",
     "numpy>=2.1.0",
